@@ -3,81 +3,111 @@
 
 % Ubah bagian-bagian berikut dengan isi dari pendahuluan
 
-Penelitian ini dilatarbelakangi oleh \lipsum[1][1-5]
+Penelitian atau implementasi ini dilatarbelakangi oleh pesatnya
+penggunaan \emph{cloud computing} serta.
 
 \section{Latar Belakang}
 \label{sec:latarbelakang}
 
-Pesatnya perkembangan roket yang merupakan \lipsum[1]
+Pesatnya perkembangan teknologi dalam bidang komputer
+seperti \emph{cloud computing} memudahkan penggunaan \emph{resource}
+komputasi secara dinamis. Teknologi \emph{cloud computing} memungkinkan
+pengguna untuk menggunakan \emph{resource} komputasi sesuai dengan spesifikasi
+yang dibutuhkan tanpa perlu memiliki \emph{resource} komputasi tersebut secara
+fisik. Salah satu bentuk implementasi \emph{cloud computing} adalah
+Google Cloud Platform (GCP).
 
-\lipsum[2]
+GCP menyediakan banyak layanan \emph{cloud computing} seperti Compute Engine yang merupakan
+layanan \emph{virtual machine} yang berjalan di mesin Google dan Google Kubernetes Engine (GKE)
+yang merupakan layanan Kubernetes. Semua layanan tersebut merupakan bentuk implementasi
+\emph{cloud computing} karena pengguna tidak perlu memiliki \emph{resources} tersebut secara
+fisik namun menggunakan \emph{resources} komputasi yang ditawarkan oleh penyedia jasa seperti GCP.
+
+Pada tugas akhir ini, akan dikembangkan sebuah sistem \emph{provisioning} untuk virtual machine
+secara dinamis yang terletak di komputer Teknik Informatika ITS. \emph{Virtual machines}
+yang dibuat akan secara otomatis tergabung dalam sebuah klaster Kubernetes yang nantinya
+dapat digunakan oleh pengguna.
 
 \section{Permasalahan}
 \label{sec:permasalahan}
 
-Dari permasalahan tersebut maka \lipsum[1][1-6]
+Dari latar belakang tersebut maka dapat dijabarkan permasalahan sebagai berikut:
+
+\begin{enumerate}[nolistsep]
+
+  \item Bagaimana cara mengimplementasikan \emph{multi-tenancy} pada proses \emph{provisioning}
+    klaster Kubernetes?
+
+  \item Bagaimana cara untuk membuat \emph{virtual machine} yang tergabung
+    dalam sebuah \emph{cluster} secara dinamis?
+
+\end{enumerate}
 
 \section{Tujuan}
 \label{sec:Tujuan}
 
-Tujuan dari \lipsum[1][1-3] adalah:
+Tujuan dari penelitian atau implementasi ini adalah sebagai berikut:
 
 \begin{enumerate}[nolistsep]
 
-  \item Membuat \lipsum[2][1-3]
-
-  \item \lipsum[3][1-3]
+  \item Membuat sistem \emph{provisioning} yang dapat membuat \emph{virtual machine}
+    secara dinamis sesuai dengan kriteria \emph{resource} permintaan pengguna.
 
 \end{enumerate}
 
 \section{Batasan Masalah}
 \label{sec:batasanmasalah}
 
-Batasan-batasan dari \lipsum[1][1-3] adalah:
+Batasan-batasan dari penelitian atau implementasi adalah sebagai berikut:
 
 \begin{enumerate}[nolistsep]
 
-  \item Mempermudah \lipsum[2][1-3]
-
-  \item \lipsum[3][1-5]
-
-  \item \lipsum[4][1-5]
+  \item \emph{Provisioning} terjadi di lingkungan Teknik Informatika Institut
+    Teknologi Sepuluh Nopember
 
 \end{enumerate}
 
 \section{Sistematika Penulisan}
 \label{sec:sistematikapenulisan}
 
-Laporan penelitian tugas akhir ini terbagi menjadi \lipsum[1][1-3] yaitu:
+Laporan penelitian tugas akhir ini terbagi menjadi beberapa bagian seperti
+berikut:
 
 \begin{enumerate}[nolistsep]
 
   \item \textbf{BAB I Pendahuluan}
 
-        Bab ini berisi \lipsum[2][1-5]
+        Bab ini berisi pengantar sekaligus gambaran tugas akhir
+        secara garis besar. Bab ini terdiri dari lima subbab, yaitu subbab
+        latar belakang, subbab permasalahan, subbab tujuan, subbab batasan
+        masalah, dan subbab sistematika penulisan.
 
         \vspace{2ex}
 
   \item \textbf{BAB II Tinjauan Pustaka}
 
-        Bab ini berisi \lipsum[3][1-5]
+        Bab ini berisi tinjauan pustaka dari teknologi-teknologi
+        yang telah diciptakan sebelumnya untuk membantu dalam proses
+        implementasi.
 
         \vspace{2ex}
 
   \item \textbf{BAB III Desain dan Implementasi Sistem}
 
-        Bab ini berisi \lipsum[4][1-5]
+        Bab ini berisi penjelasan desain dan implementasi dari sistem.
 
         \vspace{2ex}
 
   \item \textbf{BAB IV Pengujian dan Analisa}
 
-        Bab ini berisi \lipsum[5][1-5]
+        Bab ini berisi pengujian dan analisa dari sistem yang telah dibuat.
+        Pengujian dan analisa dilakukan untuk mengetahui apakah sistem yang
+        telah dibuat ... .
 
         \vspace{2ex}
 
   \item \textbf{BAB V Penutup}
 
-        Bab ini berisi \lipsum[6][1-5]
+        Bab ini berisi
 
 \end{enumerate}

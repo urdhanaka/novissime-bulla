@@ -4,6 +4,7 @@
 
 % Pengaturan ukuran teks dan bentuk halaman dua sisi
 \documentclass[12pt,twoside]{report}
+\setcounter{secnumdepth}{3}
 
 % Pengaturan ukuran halaman dan margin
 \usepackage[a4paper,top=30mm,left=30mm,right=20mm,bottom=25mm]{geometry}
@@ -15,6 +16,7 @@
 \usepackage[pdfauthor={\@author},bookmarksnumbered,pdfborder={0 0 0}]{hyperref}
 
 % Pengaturan jenis karakter
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
 % Pengaturan pewarnaan
@@ -197,6 +199,10 @@
 \renewcommand*\listtablename{DAFTAR TABEL}
 \addcontentsline{toc}{chapter}{\listtablename}
 \listoftables
+\cleardoublepage
+
+% Daftar singkatan
+\input{lainnya/daftar-singkatan.tex}
 \cleardoublepage
 
 % Nomor halaman isi dimulai dari sini
