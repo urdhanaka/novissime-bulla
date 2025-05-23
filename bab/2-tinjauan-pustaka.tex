@@ -44,7 +44,7 @@ hal tersebut, Kubernetes menyediakan beberapa fitur seperti berikut:
     }
   \item{\emph{Horizontal scaling}}
     \par{Aplikasi yang di-\emph{deploy} pada Kubernetes dapat di-\emph{scaling} secara
-      \emph{horizontal}, yaitu penambahan \emph{Pods} untuk pengerjaan aplikasi tersebut
+      \emph{horizontal}, yaitu penambahan Pod untuk pengerjaan aplikasi tersebut
     }
   \item{IPv4 dan IPv6 \emph{dual-stack}}
     \par{Kubernetes dapat menggunakan IPv4 dan IPv6 untuk alamat IP dari objek dalam Kubernetes
@@ -58,10 +58,10 @@ hal tersebut, Kubernetes menyediakan beberapa fitur seperti berikut:
 
 Kubernetes memiliki konsep klaster yang merupakan kumpulan dari satu atau
 lebih mesin. Klaster Kubernetes terdiri dari \emph{control plane} yang mengatur
-mengatur \emph{worker nodes} dan \emph{Pods} pada klaster
+mengatur \emph{worker nodes} dan Pod pada klaster
 beserta kumpulan mesin \emph{worker} yang disebut sebagai \emph{worker nodes} yang 
 menjalankan aplikasi \emph{containerized}. Setiap \emph{cluster} membutuhkan
-setidaknya satu \emph{worker nodes} untuk menjalankan \emph{Pods}. Arsitektur
+setidaknya satu \emph{worker nodes} untuk menjalankan Pod. Arsitektur
 klaster Kubernetes dapat dilihat pada gambar \ref{fig:arsitektur-cluster-kubernetes}
 
 \begin{figure}[H]
@@ -99,9 +99,9 @@ etcd, kube-scheduler, kube-controller-manager, dan cloud-controller-manager.
     Komponen etcd digunakan untuk menyimpan semua data pada klaster seperti \emph{state}
     klaster saat ini dan \emph{state} yang diinginkan.
 
-  \item Komponen kube-scheduler merupakan komponen yang mengamati \emph{Pods} yang telah
-    selesai dibuat dan menempatkan \emph{Pods} ke \emph{node} untuk dijalankan. Pada saat
-    menempatkan \emph{Pods} ke \emph{node}, kube-scheduler memperhitungkan faktor-faktor
+  \item Komponen kube-scheduler merupakan komponen yang mengamati Pod yang telah
+    selesai dibuat dan menempatkan Pod ke \emph{node} untuk dijalankan. Pada saat
+    menempatkan Pod ke \emph{node}, kube-scheduler memperhitungkan faktor-faktor
     yang berpengaruh seperti batasan \emph{hardware/software}, kebutuhan sumber daya secara
     individu dan kolektif, spesifikasi afinitas dan non-afinitas, \emph{data locality}, interferensi
     antar beban kerja, dan tenggat waktu dari beban kerja.
@@ -121,14 +121,14 @@ etcd, kube-scheduler, kube-controller-manager, dan cloud-controller-manager.
 \subsubsection{Kubernetes Node}
 
 Pada sebuah klaster Kubernetes, mesin atau server selain \emph{control plane} akan menjadi \emph{node}.
-\emph{Node} bertugas untuk menjalankan \emph{Pods}. Untuk membantu dalam menjalankan tugas tersebut, \emph{node}
+\emph{Node} bertugas untuk menjalankan Pod. Untuk membantu dalam menjalankan tugas tersebut, \emph{node}
 memiliki beberapa komponen yaitu kubelet, \emph{container runtime}, dan kube-proxy.
 
 \begin{enumerate}
   
-  \item Komponen kubelet merupakan sebuah komponen untuk memastikan \emph{container} berjalan di dalam \emph{Pods}.
+  \item Komponen kubelet merupakan sebuah komponen untuk memastikan \emph{container} berjalan di dalam Pod.
     Komponen kubelet menggunakan konfigurasi dari Podspec yang berupa objek YAML atau JSON yang mendeskripsikan
-    sebuah \emph{Pods}. Komponen kubelet menerima konfigurasi Podspec yang disediakan dari banyak mekanisme seperti
+    sebuah Pod. Komponen kubelet menerima konfigurasi Podspec yang disediakan dari banyak mekanisme seperti
     apiserver dan memastikan bahwa \emph{container} yang didefinisikan pada Podspec berjalan dengan baik. Komponen kubelet
     tidak mengelola \emph{container} yang tidak diciptakan oleh Kubernetes.
 
@@ -138,7 +138,7 @@ memiliki beberapa komponen yaitu kubelet, \emph{container runtime}, dan kube-pro
     CRI (\emph{Container Runtime Interface}).
 
   \item Komponen kube-proxy mengatur pengaturan jaringan pada setiap \emph{node}. Pengaturan tersebut mengatur komunikasi
-    jaringan menuju \emph{Pods} dari dalam atau luar klaster. Kube-proxy memastikan \emph{request} diteruskan menuju ke
+    jaringan menuju Pod dari dalam atau luar klaster. Kube-proxy memastikan \emph{request} diteruskan menuju ke
     \emph{container} yang tepat.
 
 \end{enumerate}
@@ -158,7 +158,51 @@ kumpulan dari satu atau lebih \emph{container} yang berbagi alamat IP dan volume
 pengaturan mengenai bagaimana \emph{container} tersebut dijalankan. Konfigurasi Pod dapat
 diatur dengan konfigurasi deklaratif menggunakan Podspec yang memiliki ekstensi YAML atau JSON.
 
-\subsubsection{test}
+\subsubsection{Replication Controllers dan ReplicaSet}
+
+Replication Controllers merupakan objek yang mendefinisikan sebuah \emph{pod template}
+dan parameter kontrol untuk melakukan \emph{scaling} secara horizontal, yaitu dengan
+cara menambahkan atau mengurangi jumlah dari Pod yang sedang berjalan. Replication
+Controllers bertanggung jawab untuk memastikan jumlah Pod yang ada pada klaster
+sesuai dengan jumlah Pod yang didefinisikan pada konfigurasi.
+
+\subsubsection{Job}
+
+Job merupakan beban kerja pada Kubernetes yang berbasis tugas. Job akan menciptakan
+satu atau lebih Pod untuk menyelesaikan tugas Job tersebut. Ketika tugas tersebut
+selesai, Pod yang menjalankan tugas tersebut akan berhenti. Job menjamin jumlah
+Pod yang diciptakan akan selalu sesuai dengan jumlah Pod yang diinginkan pada
+saat menjalankan tugas Job. Ketika sebuah Pod mengalami kegagalan dalam menjalankan
+tugas Job, Job dapat menciptakan Pod baru untuk menyelesaikan tugasnya. Job dapat
+menciptakan lebih dari satu Pod untuk menjalankan tugas secara paralel.
+
+\subsubsection{Service}
+
+Service merupakan abstraksi dari Pod yang menyediakan alamat IP dan DNS yang
+akan digunakan untuk mengakses Pod tersebut. Service pada Kubernetes merupakan
+objek yang mengimplementasikan arsitektur REST. Terdapat beberapa tipe dari objek
+Service, yaitu ClusterIP, NodePort, LoadBalancer, dan ExternalName.
+
+\begin{enumerate}
+  
+  \item{ClusterIP merupakan tipe dari Service yang melakukan ekspos Service pada.}
+
+  \item{
+      NodePort merupakan tipe dari Service yang melakukan ekspos Service pada alamat IP
+      dan \emph{port} statik setiap \emph{node}. NodePort memungkinkan Service untuk diakses dari luar
+      dengan melakukan \emph{request} pada NodeIP dan NodePort.
+    }
+
+  \item{
+      LoadBalancer merupakan tipe dari Service 
+    }
+
+  \item{
+      ExternalName merupakan tipe dari Service yang memetakan Service dengan \emph{externalName}
+      dengan cara mengembalikan catata CNAME bersama dengan nilainya.
+    }
+
+\end{enumerate}
 
 \subsection{K3s}
 
