@@ -6,23 +6,32 @@
 
 \vspace{2ex}
 
+\begin{center}
+  \large\textbf{\tatitle{}}
+\end{center}
+
+\vspace{2ex}
+
 \begingroup
 % Menghilangkan padding
 \setlength{\tabcolsep}{0pt}
 
 \noindent
 \begin{tabularx}{\textwidth}{l >{\centering}m{2em} X}
-  Nama Mahasiswa    & : & \name{}         \\
-
-  Judul Tugas Akhir & : & \tatitle{}      \\
-
-  Pembimbing        & : & 1. \advisor{}   \\
-                    &   & 2. \coadvisor{} \\
+  \textbf{Nama Mahasiswa / NRP} & : & \textbf{\name{} - \nrp{}} \\
+  \textbf{Departemen}           & : & \textbf{\department{}}    \\
+  \textbf{Dosen Pembimbing I}   & : & \textbf{\advisor{}}       \\
+  \textbf{Dosen Pembimbing II}  & : & \textbf{\coadvisor{}}     \\
 \end{tabularx}
 \endgroup
 
-% Ubah paragraf berikut dengan abstrak dari tugas akhir
-Pada penelitian ini kami mengajukan test here if it works \lipsum[1]
+\noindent
+\textbf{Abstrak}
 
+% Ubah paragraf berikut dengan abstrak dari tugas akhir
+Pada penelitian ini kami mengajukan \lipsum[1]
+
+\vspace{2ex}
 % Ubah kata-kata berikut dengan kata kunci dari tugas akhir
-Kata Kunci: \emph{Multi-tenancy}, \emph{Virtual Machine} Roket, \emph{Anti-gravitasi}, Energi, Angkasa.
+\noindent
+\textbf{Kata Kunci: \emph{multi-tenancy}, \emph{virtual machine}, Kubernetes, \emph{virtual-cluster}.}

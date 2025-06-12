@@ -6,23 +6,32 @@
 
 \vspace{2ex}
 
+\begin{center}
+  \large\textbf{\engtatitle{}}
+\end{center}
+
+\vspace{2ex}
+
 \begingroup
 % Menghilangkan padding
 \setlength{\tabcolsep}{0pt}
 
 \noindent
 \begin{tabularx}{\textwidth}{l >{\centering}m{3em} X}
-  \emph{Name}     & : & \name{}         \\
-
-  \emph{Title}    & : & \engtatitle{}   \\
-
-  \emph{Advisors} & : & 1. \advisor{}   \\
-                  &   & 2. \coadvisor{} \\
+  \textbf{Name / NRP}   & : & \textbf{\name{} - \nrp{}} \\
+  \textbf{Department}   & : & \textbf{\engdepartment{}} \\
+  \textbf{Advisor I}   & : & \textbf{\advisor{}}       \\
+  \textbf{Advisor II}  & : & \textbf{\coadvisor{}}     \\
 \end{tabularx}
 \endgroup
 
-% Ubah paragraf berikut dengan abstrak dari tugas akhir dalam Bahasa Inggris
-\emph{In this research, we proposed \lipsum[1]}
+\noindent
+\textbf{Abstract}
 
+% Ubah paragraf berikut dengan abstrak dari tugas akhir dalam Bahasa Inggris
+In this research, we proposed \lipsum[1]
+
+\vspace{2ex}
 % Ubah kata-kata berikut dengan kata kunci dari tugas akhir dalam Bahasa Inggris
-\emph{Keywords}: \emph{Rocket}, \emph{Anti-gravity}, \emph{Energy}, \emph{Space}.
+\noindent
+\textbf{Keywords: \emph{multi-tenancy}, \emph{virtual-machine}, \emph{Kubernetes}, \emph{virtual-cluster}.}

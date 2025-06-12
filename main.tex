@@ -5,6 +5,7 @@
 % Pengaturan ukuran teks dan bentuk halaman dua sisi
 \documentclass[12pt,twoside]{report}
 \setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
 
 % Pengaturan ukuran halaman dan margin
 \usepackage[a4paper,top=30mm,left=30mm,right=20mm,bottom=25mm]{geometry}
@@ -24,6 +25,28 @@
 
 % Pengaturan kutipan artikel
 \usepackage[style=apa, backend=biber]{biblatex}
+
+% Pengaturan format daftar isi
+\usepackage[titles]{tocloft}
+\setlength{\cftsecindent}{2em}
+\setlength{\cftsubsecindent}{2em}
+\setlength{\cftsubsubsecindent}{2em}
+\setlength{\cftbeforechapskip}{1.5ex}
+\setlength{\cftbeforesecskip}{1ex}
+\setlength{\cftbeforesubsecskip}{1ex}
+\setlength{\cftbeforesubsubsecskip}{1ex}
+\setlength{\cftbeforetoctitleskip}{0cm}
+\setlength{\cftbeforeloftitleskip}{4ex}
+\setlength{\cftafterloftitleskip}{0cm}
+\setlength{\cftbeforelottitleskip}{0cm}
+\setlength{\cftfigindent}{0pt}
+\setlength{\cfttabindent}{0pt}
+\renewcommand{\cfttoctitlefont}{\hfill\Large\bfseries} % command untuk membuat heading bold dan besar
+\renewcommand{\cftaftertoctitle}{\hfill}
+\renewcommand{\cftloftitlefont}{\hfill\Large\bfseries}
+\renewcommand{\cftafterloftitle}{\hfill}
+\renewcommand{\cftlottitlefont}{\hfill\Large\bfseries}
+\renewcommand{\cftafterlottitle}{\hfill}
 
 % Package lainnya
 \usepackage{changepage}
@@ -92,10 +115,15 @@
 \titleformat{\section}{\bfseries\large}{\MakeUppercase{\thesection}}{1ex}{\vspace{1ex}}
 \titleformat{\subsection}{\bfseries\large}{\MakeUppercase{\thesubsection}}{1ex}{}
 \titleformat{\subsubsection}{\bfseries\large}{\MakeUppercase{\thesubsubsection}}{1ex}{}
+\titleformat{\subsubsubsection}{\bfseries\large}{\MakeUppercase{\thesubsubsubsection}}{1ex}{}
 \titlespacing{\chapter}{0ex}{0ex}{4ex}
 \titlespacing{\section}{0ex}{1ex}{0ex}
 \titlespacing{\subsection}{0ex}{0.5ex}{0ex}
 \titlespacing{\subsubsection}{0ex}{0.5ex}{0ex}
+\titlespacing{\subsubsubsection}{0ex}{0.5ex}{0ex}
+
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
 
 \input{pustaka/variables.tex}
 \input{pustaka/tanda-hubung.tex}
@@ -108,6 +136,7 @@
 \definecolor{comment}{RGB}{0,128,0}
 \definecolor{string}{RGB}{255,0,0}
 \definecolor{keyword}{RGB}{0,0,255}
+\renewcommand{\lstlistingname}{Kode Sumber}
 \lstdefinestyle{codestyle}{
   commentstyle=\color{comment},
   stringstyle=\color{string},
@@ -122,6 +151,7 @@
   showstringspaces=false,
   upquote=true,
   tabsize=2,
+  captionpos=b,
 }
 \lstset{style=codestyle}
 
@@ -156,31 +186,19 @@
 % Pengaturan ukuran spasi paragraf
 \setlength{\parskip}{1ex}
 
-% Lembar pengesahan
-\input{lainnya/lembar-pengesahan.tex}
-\cleardoublepage
-\input{lainnya/lembar-pengesahan-en.tex}
-\cleardoublepage
-
-% Pernyataan keaslian
-\input{lainnya/pernyataan-keaslian.tex}
-\cleardoublepage
-\input{lainnya/pernyataan-keaslian-en.tex}
-\cleardoublepage
-
 % Nomor halaman pembuka dimulai dari sini
 \pagenumbering{roman}
 
-% Abstrak Bahasa Indonesia
+% Lembar pengesahan dan pernyataan-keaslian
+\input{lainnya/lembar-pengesahan.tex}
+\cleardoublepage
+\input{lainnya/pernyataan-keaslian.tex}
+\cleardoublepage
+
+% Abstrak
 \input{abstrak/abstrak-id.tex}
 \cleardoublepage
-
-% Abstrak Bahasa Inggris
 \input{abstrak/abstrak-en.tex}
-\cleardoublepage
-
-% Kata pengantar
-\input{lainnya/kata-pengantar.tex}
 \cleardoublepage
 
 % Daftar isi
@@ -201,6 +219,11 @@
 \listoftables
 \cleardoublepage
 
+\renewcommand*\lstlistlistingname{DAFTAR KODE SUMBER}
+\addcontentsline{toc}{chapter}{\lstlistlistingname}
+\lstlistoflistings
+\cleardoublepage
+
 % Daftar singkatan
 \input{lainnya/daftar-singkatan.tex}
 \cleardoublepage
@@ -217,7 +240,7 @@
 \cleardoublepage
 
 % Bab 3 desain dan implementasi
-\input{bab/3-desain-implementasi.tex}
+\input{bab/3-metodologi.tex}
 \cleardoublepage
 
 % Bab 4 pengujian dan analisis

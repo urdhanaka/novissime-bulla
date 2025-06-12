@@ -3,12 +3,32 @@
 
 % Ubah bagian-bagian berikut dengan isi dari tinjauan pustaka
 
-Demi mendukung implementasi pada tugas akhir, dasar teori
-yang berkaitan akan dijelaskan pada bab ini.
-Kajian yang didapat dan dasar teori tersebut
-akan digunakan pada tugas akhir ini.
+Demi mendukung implementasi pada tugas akhir, penelitian atau perancangan terdahulu dan dasar teori
+yang berkaitan akan dijelaskan pada bab ini. Hasil kajian yang didapat
+dan dasar teori tersebut akan digunakan pada tugas akhir.
 
-\section{Kubernetes}
+\section{Penelitian atau Perancangan Terdahulu}
+
+\subsection{ViteraaS: Virtual Cluster as a Service}
+
+Paper ini mengangkat studi kasus mengenai penggunaan sumber daya komputasi
+yang dimiliki oleh sebuah universitas. Sumber daya komputasi yang dimiliki
+oleh universitas tersebut seperti PC dan server tidak termanfaatkan dengan
+baik seperti saat malam hari karena tidak banyak mahasiswa yang menggunakannya.
+Namun, sumber daya komputasi tersebut akan sangat padat penggunaannya saat
+mendekati akhir semester dengan banyaknya tugas yang diberikan.
+
+Dengan studi kasus tersebut, penulis dari penelitian ini mengajukan sebuah
+platform bernama ViteraaS (Virtual Cluster as a Service). Platform tersebut
+digunakan untuk membuat \emph{virtual cluster} dari \emph{pool} sumber daya
+komputasi yang dimiliki oleh universitas. ViteraaS terintegrasi dengan
+infrastruktur universitas seperti \emph{Single Sign-On} (SSO). Untuk mengatur
+infrastruktur virtual seperti membuat klaster \emph{virtual machine} secara dinamik,
+ViteraaS menggunakan OpenNebula \parencite{6133210}.
+
+\section{Dasar Teori}
+
+\subsection{Kubernetes}
 \label{sec:kubernetes}
 
 Kubernetes adalah sebuah platform manajemen aplikasi yang dikemas (\emph{containerized applications})
@@ -18,74 +38,115 @@ kemudian beberapa pengembang Borg menciptakan platform serupa
 namun bersifat sumber terbuka yang diberi nama Kubernetes \parencite{borg-references}.
 
 Kubernetes dapat mengelola jalannya aplikasi berbasis kontainer seperti membuat
-aplikasi yang tersebut \emph{scalable} dengan cara menambah atau mengurangi \emph{container}
+aplikasi tersebut \emph{scalable} dengan cara menambah atau mengurangi \emph{container}
 yang menjalankan aplikasi tersebut sesuai dengan kebutuhan pengguna. Untuk memenuhi
 hal tersebut, Kubernetes menyediakan beberapa fitur seperti berikut:
 
 \begin{enumerate}
-  \item{\emph{Service discovery} dan \emph{load balancing}}
-    \par{\emph{Container} pada Kubernetes diekspos oleh Kubernetes menggunakan DNS atau IP dari
-      \emph{container} tersebut. Jika \emph{traffic} menuju \emph{container} tersebut tinggi, Kubernetes
-      dapat menggunakan \emph{load balancer} agar \emph{deployment} tetap stabil.
-    }
+
+  \item \emph{Service discovery} dan \emph{load balancing}
+
+    \emph{Container} pada Kubernetes diekspos oleh Kubernetes menggunakan DNS atau IP dari
+    \emph{container} tersebut. Jika \emph{traffic} menuju \emph{container} tersebut tinggi, Kubernetes
+    dapat menggunakan \emph{load balancer} sehingga \emph{traffic} dialihkan ke \emph{container} lain yang sejenis
+    agar \emph{deployment} tetap stabil. Selain itu, dengan \emph{load balancing}, \emph{request} dapat ditangani
+    dengan cepat tanpa perlu menunggu \emph{container} memroses semua \emph{traffic}
+    yang tinggi.
+
   \item{Orkestrasi penyimpanan}
-    \par{Kubernetes dapat menggunakan beberapa jenis sistem penyimpanan, seperti
-      penyimpanan lokal, penyimpanan dari penyedia jasa \emph{cloud}, dan sebagainya
-    }
-  \item{\emph{Rollouts} dan \emph{rollbacks} secara otomatis}
-    \par{Kubernetes dapat menyesuaikan \emph{state} dari konfigurasi \emph{state} yang
-      diberikan, sehingga status dari \emph{state} klaster Kubernetes akan selalu mengikuti
-      \emph{state} yang diberikan
-    }
-  \item{\emph{Self-healing}}
-    \par{Kubernetes akan memulai ulang \emph{container} yang gagal atau mati dalam
-      mengerjakan \emph{job}, menggantikan \emph{container}, dan akan selalu menunggu
-      \emph{container} yang belum siap sebelum pengguna dapat menggunakannya
-    }
-  \item{\emph{Horizontal scaling}}
-    \par{Aplikasi yang di-\emph{deploy} pada Kubernetes dapat di-\emph{scaling} secara
-      \emph{horizontal}, yaitu penambahan Pod untuk pengerjaan aplikasi tersebut
-    }
-  \item{IPv4 dan IPv6 \emph{dual-stack}}
-    \par{Kubernetes dapat menggunakan IPv4 dan IPv6 untuk alamat IP dari objek dalam Kubernetes
-    }
-  \item{Desain untuk ekstensibilitas}
-    \par{Kubernetes didesain agar mudah dieksten tanpa merubah \emph{source code} dari Kubernetes
-    }
+
+    Kubernetes dapat menggunakan beberapa jenis sistem penyimpanan, seperti
+    penyimpanan lokal, penyimpanan dari penyedia jasa \emph{cloud}, dan sebagainya.
+    Penyimpanan ini akan digunakan untuk banyak skenario, seperti penyediaan penyimpanan
+    sementara untuk Pod, membagi sebuah \emph{filesystem} antara dua \emph{container}
+    yang berbeda dalam satu Pod, membagi sebuah \emph{filesystem} antara dua Pod yang
+    berbeda, dan lain-lain.
+
+  \item \emph{Rollouts} dan \emph{rollbacks} secara otomatis
+
+    Kubernetes dapat menyesuaikan \emph{state} dari konfigurasi \emph{state} yang
+    diberikan, sehingga status dari \emph{state} klaster Kubernetes akan selalu mengikuti
+    \emph{state} yang diberikan. \emph{Rollouts} pada Kubernetes menghasilkan versi terbaru
+    dari sebuah aplikasi pada sebuah klaster. Proses \emph{rollouts} berjalan secara inkremental.
+    \emph{Rollbacks} adalah sebuah proses untuk kembali ke versi atau \emph{state} sebelumnya apabila
+    \emph{state} yang baru mengalami masalah atau tidak stabil.
+    
+
+  \item \emph{Self-healing}
+
+    Kubernetes memiliki fitur \emph{self-healing} sehingga Kubernetes
+    akan memulai ulang \emph{container} yang gagal atau mati dalam
+    mengerjakan \emph{job}, menggantikan \emph{container}, dan akan selalu menunggu
+    \emph{container} yang belum siap sebelum pengguna dapat menggunakannya. Dengan begitu,
+    semua komponen pada klaster Kubernetes harus berada pada posisi yang sudah siap
+    sebelum dapat digunakan.
+
+    
+  \item \emph{Horizontal scaling}
+
+    Aplikasi yang di-\emph{deploy} pada Kubernetes dapat di-\emph{scaling} secara
+    \emph{horizontal}, yaitu penambahan Pod untuk pengerjaan aplikasi tersebut. Proses
+    ini terjadi secara otomatis jika \emph{workload} yang diterima oleh klaster lebih tinggi
+    dari kemampuan klaster dalam menangani \emph{workload} tersebut. Jika \emph{workload}
+    sudah mulai berkurang dan jumlah Pod di atas dari konfigurasi jumlah minimum Pod, maka
+    tambahan Pod yang dibuat untuk menangani \emph{workload} yang tinggi tersebut akan dikurangi.
+    
+  \item IPv4 dan IPv6 \emph{dual-stack}
+
+    Kubernetes dapat menggunakan IPv4 dan/atau IPv6 untuk alamat IP dari objek dalam Kubernetes.
+    Penggunaan alamat IP untuk objek pada klaster Kubernetes dapat berupa ipv4 saja, ipv6 saja, atau
+    penggunaan keduanya.
+    
+  \item Desain untuk ekstensibilitas
+
+    Kubernetes didesain agar mudah dieksten tanpa merubah \emph{source code} dari Kubernetes.
+    Salah satu contoh dari ekstensi yang bisa dilakukan tanpa merubah \emph{source code}
+    dari Kubernetes adalah \emph{Custom Resources}. Pengguna klaster Kubernetes dapat
+    membuat sebuah \emph{resource} baru menggunakan \emph{Custom Resources} tersebut. \emph{Resource}
+    tersebut dapat berupa API khusus.
+
+    \clearpage
+    
 \end{enumerate}
 
-\subsection{Arsitektur Kubernetes}
+\subsubsection{Arsitektur Kubernetes}
 
-Kubernetes memiliki konsep klaster yang merupakan kumpulan dari satu atau
-lebih mesin. Klaster Kubernetes terdiri dari \emph{control plane} yang mengatur
-mengatur \emph{worker nodes} dan Pod pada klaster
-beserta kumpulan mesin \emph{worker} yang disebut sebagai \emph{worker nodes} yang 
-menjalankan aplikasi \emph{containerized}. Setiap \emph{cluster} membutuhkan
-setidaknya satu \emph{worker nodes} untuk menjalankan Pod. Arsitektur
+Kubernetes menggunakan konsep klaster yang merupakan kumpulan dari satu atau
+lebih server. Klaster Kubernetes terdiri dari satu buah server atau satu kelompok server yang
+bertugas menjadi \emph{control plane} dan server lainnya menjadi \emph{worker node}.
+Server atau kelompok server \emph{control plane} bertugas untuk mengatur jalannya
+server lain yang menjadi \emph{worker node}, seperti melakukan \emph{health checking} serta
+\emph{scheduling} pada \emph{worker node}, sedangkan server yang menjadi \emph{worker node}
+bertugas untuk menerima dan melakukan pekerjaan yang diberikan oleh \emph{control plane}
+dengan menggunakan sumber daya yang ada pada klaster. Arsitektur
 klaster Kubernetes dapat dilihat pada gambar \ref{fig:arsitektur-cluster-kubernetes}
 
 \begin{figure}[H]
   \centering
 
   % Ubah dengan nama file gambar dan ukuran yang akan digunakan
-  \includegraphics[scale=0.2]{gambar/kubernetes-cluster-architecture.png}
+  \includegraphics[scale=0.15]{gambar/kubernetes-cluster-architecture.png}
 
   % Ubah dengan keterangan gambar yang diinginkan
   \caption{Arsitektur klaster Kubernetes}
   \label{fig:arsitektur-cluster-kubernetes}
 \end{figure}
 
-\emph{Cluster} tersebut adalah tempat dimana semua \emph{containerized applications},
-\emph{jobs}, dan komponen Kubernetes berjalan. 
-
-Untuk membuat \emph{cluster}, Kubernetes memiliki \emph{tool} berupa kubeadm
+Dalam proses pembuatan klaster Kubernetes, Kubernetes menyediakan \emph{binary} pembantu
+yang memudahkan pembuatan bernama kubeadm. Untuk membuat sebuah klaster Kubernetes,
+server yang digunakan sebagai \emph{control plane} harus terlebih dahulu menginisiasi
+pembuatan klaster. Setelah server \emph{control plane} telah selesai dalam menginisiasi klaster,
+server yang digunakan sebagai \emph{worker node} akan digabungkan ke dalam klaster yang sebelumnya
+telah dibuat oleh \emph{control plane}. Untuk memudahkan dalam pembuatan klaster, distribusi
+Kubernetes bernama K3s akan digunakan dalam implementasi pada tugas akhir ini. Penjelasan
+mengenai K3s akan dijelaskan pada bab \ref{chap:K3s}.
 
 \subsubsection{Kubernetes Control Plane}
 
-Pada klaster Kubernetes, mesin yang menjadi \emph{control plane} bertugas
-untuk membuat keputusan global seperti \emph{scheduling} serta mendeteksi
-dan merespon \emph{event} yang terjadi pada klaster tersebut. Untuk melakukan
-tugas tersebut, \emph{control plane} memiliki beberapa komponen yaitu kube-apiserver,
+Pada klaster Kubernetes, server yang menjadi \emph{control plane} bertugas
+untuk melakukan \emph{health checking} serta membuat keputusan global seperti \emph{scheduling}
+serta mendeteksi dan merespon \emph{event} yang terjadi pada klaster tersebut. Untuk melakukan
+tugas tersebut, \emph{control plane} memiliki komponen kube-apiserver,
 etcd, kube-scheduler, kube-controller-manager, dan cloud-controller-manager.
 
 \begin{enumerate}
@@ -120,8 +181,8 @@ etcd, kube-scheduler, kube-controller-manager, dan cloud-controller-manager.
 
 \subsubsection{Kubernetes Node}
 
-Pada sebuah klaster Kubernetes, mesin atau server selain \emph{control plane} akan menjadi \emph{node}.
-\emph{Node} bertugas untuk menjalankan Pod. Untuk membantu dalam menjalankan tugas tersebut, \emph{node}
+Pada sebuah klaster Kubernetes, mesin atau server selain \emph{control plane} akan menjadi \emph{worker node}.
+\emph{Worker node} bertugas untuk menjalankan Pod. Untuk membantu dalam menjalankan tugas tersebut, komponen \emph{worker node}
 memiliki beberapa komponen yaitu kubelet, \emph{container runtime}, dan kube-proxy.
 
 \begin{enumerate}
@@ -185,36 +246,217 @@ Service, yaitu ClusterIP, NodePort, LoadBalancer, dan ExternalName.
 
 \begin{enumerate}
   
-  \item{ClusterIP merupakan tipe dari Service yang melakukan ekspos Service pada.}
+  \item ClusterIP merupakan tipe dari Service yang melakukan ekspos Service
+    pada IP internal klaster. Tipe ClusterIP ini merupakan tipe \emph{default}
+    untuk Service. Service yang menggunakan tipe ini hanya dapat diakses di dalam
+    klaster saja.
 
-  \item{
-      NodePort merupakan tipe dari Service yang melakukan ekspos Service pada alamat IP
-      dan \emph{port} statik setiap \emph{node}. NodePort memungkinkan Service untuk diakses dari luar
-      dengan melakukan \emph{request} pada NodeIP dan NodePort.
-    }
+  \item NodePort merupakan tipe dari Service yang melakukan ekspos Service pada alamat IP
+    dan \emph{port} statik setiap \emph{node}. NodePort memungkinkan Service untuk diakses dari luar
+    dengan melakukan \emph{request} pada NodeIP dan NodePort.
 
-  \item{
-      LoadBalancer merupakan tipe dari Service 
-    }
+  \item LoadBalancer merupakan tipe dari Service yang mengekspos Service secara eksternal
+    menggunakan \emph{load balancer} eksternal. Kubernetes tidak menyediakan komponen
+    \emph{load balancing} secara langsung, sehingga komponen \emph{load balancer} harus
+    disediakan sendiri oleh pengguna atau pengelola klaster.
 
-  \item{
-      ExternalName merupakan tipe dari Service yang memetakan Service dengan \emph{externalName}
-      dengan cara mengembalikan catata CNAME bersama dengan nilainya.
-    }
+  \item ExternalName merupakan tipe dari Service yang memetakan Service dengan \emph{externalName}.
+    Hasil pemetakan akan mengkonfigurasi server DNS klaster untuk mengembalikan catatan CNAME dengan
+    nilai berupa \emph{externalName} yang sudah dipetakan sebelumnya.
 
 \end{enumerate}
 
 \subsection{K3s}
+\label{chap:K3s}
 
-Kubernetes memiliki banyak komponen untuk menjalankan platform Kubernetes. Banyak komponen
-tersebut terkadang tidak diperlukan di beberapa skenario. 
+Kubernetes membutuhkan banyak komponen untuk menjalankan platform Kubernetes
+seperti etcd sebagai tempat penyimpanan data untuk semua data pada klaster,
+\emph{container runtime} sebagai pengelola \emph{container} yang akan
+dijalankan pada pods, dan lain-lain. Banyak komponen tersebut terkadang
+tidak diperlukan di beberapa skenario. Untuk mengatasi permasalahan tersebut,
+sebuah distribusi Kubernetes bernama K3s diciptakan.
 
-K3s merupakan distribusi Kubernetes yang diciptakan oleh Rancher yang
-memiliki \emph{size} yang lebih kecil secara keseluruhan. K3s berbentuk
+K3s \parencite{k3s-website} merupakan distribusi Kubernetes yang diciptakan oleh Rancher Labs yang
+memiliki ukuran yang lebih kecil secara keseluruhan. K3s berbentuk
 \emph{binary} yang berisi semua \emph{tools} yang dibutuhkan untuk membuat
-\emph{cluster} dan bergabung ke \emph{cluster}.
+klaster dan bergabung ke klaster. K3s didesain untuk lingkungan
+yang memiliki sumber daya terbatas seperti \emph{edge computing} dan \emph{Internet of Things}.
+\emph{Binary} K3s berisi \emph{tools} dan \emph{packages} yang diperlukan untuk membuat
+klaster Kubernetes seperti Containerd dan runc sebagai CRI (\emph{Container Runtime Interface}),
+Flannel untuk CNI (\emph{Container Network Interface}), CoreDNS untuk Cluster DNS, dan lain-lain.
 
-\section{\emph{Multi-tenancy}}
+\subsection{\emph{Container}}
+\label{sec:container}
+
+\emph{Container} merupakan sebuah unit perangkat lunak yang ringan yang membungkus
+aplikasi dan semua dependensi yang dibutuhkan untuk menjalankan aplikasi tersebut. Dengan menggunakan
+\emph{container}, aplikasi yang dibungkus dapat berjalan secara konsisten walaupun dijalankan
+di lingkungan yang berbeda.
+
+Pada dasarnya, \emph{container} bisa disebut sebagai produk virtualisasi. Perbedaan
+mendasar antara \emph{container} dan \emph{virtual machine} adalah \emph{container}
+menggunakan kernel sistem operasi dari \emph{host}, sedangkan \emph{virtual machine} menjalankan
+sistem operasi tersendiri secara penuh. Perbedaan tersebut menyebabkan \emph{container} lebih ringan
+dibandingkan dengan \emph{virtual machine} sehingga cocok untuk menjalankan aplikasi
+yang tidak membutuhkan sistem operasi tersendiri secara penuh.
+Untuk menjalankan tugasnya, \emph{container} memiliki beberapa mekanisme/fitur seperti
+berikut:
+
+\begin{enumerate}
+  
+  \item \emph{Namespaces}
+
+    Fitur \emph{namespaces} menyediakan isolasi dengan cara membagi sumber daya sistem
+    yang dimiliki oleh \emph{host} seperti PID dan \emph{network interfaces} ke grup
+    yang terisolasi. Setiap \emph{container} memiliki \emph{namespace} tersendiri sehingga
+    \emph{container} terlihat memiliki sumber daya tersendiri. Hal tersebut mencegah
+    adanya konflik dengan \emph{container} lain yang sedang berjalan dalam sistem.
+
+  \item \emph{Control Groups} (cgroups)
+
+    Fitur cgroups digunakan untuk mengalokasi dan membatasi sumber daya seperti CPU, \emph{memory},
+    dan \emph{input/output} ke sebuah grup proses. Cgroups memastikan agar \emph{container}
+    tidak menggunakan sumber daya \emph{host} secara berlebihan dan memastikan pembagian sumber daya
+    secara adil untuk semua \emph{container}.
+
+  \item \emph{UnionFS}
+
+    \emph{UnionFS} adalah jenis dari \emph{filesystem} yang merupakan fitur dari kernel Linux. \emph{Container}
+    menggunakan \emph{unionfs} sebagai \emph{filesystem} yang digunakan. Dengan menggunakan
+    \emph{unionfs} sebagai \emph{filesystem}, \emph{container} dapat mengatur \emph{disk space}
+    dan menangani perubahan yang cepat.
+
+  \item \emph{Container Images}
+
+    \emph{Container images} merupakan sebuah \emph{package} yang bersifat statik yang berisi
+    semua dependensi yang dibutuhkan untuk menjalankan aplikasi. \emph{Container images} diciptakan
+    melalui serangkaian instruksi dan merupakan \emph{blueprint} dalam menciptakan \emph{container}.
+    \emph{Container images} dapat diberi versi dan dapat dibagi, sehingga semua \emph{container}
+    yang menggunakan versi tertentu dari \emph{container image} akan bersifat sama.
+
+  \item \emph{Container Runtime}
+
+    Untuk menjalankan \emph{container}, dibutuhkan sebuah \emph{container runtime}. \emph{Container runtime}
+    bertanggung jawab atas semua operasi untuk menjalankan \emph{container} seperti mengunduh
+    \emph{container images}, membuat sebuah \emph{instance} dari \emph{container}, dan mengatur
+    siklus hidup dari \emph{container}.
+
+\end{enumerate}
+
+Kelebihan dari penggunaan \emph{container} adalah sebagai berikut:
+
+\begin{enumerate}
+
+  \item Konsistensi dan Portabilitas
+
+    Mekanisme dasar dari \emph{container} dan \emph{container image} menyebabkan aplikasi
+    yang dibungkus ke dalam \emph{container} sudah menjadi satu dengan dependensi-dependensi
+    yang diperlukan dalam menjalankan aplikasi. Selain itu, sifat \emph{container image} yang bersifat
+    statik dan memiliki versi membuat \emph{container} konsisten dan sangat portabel.
+
+  \item Efisiensi dan Utilisasi Sumber Daya
+
+    Mekanisme \emph{container} yang berbeda dengan \emph{virtual machine} menyebabkan
+    \emph{container} lebih ringan dibandingkan dengan \emph{virtual machine}. Jika aplikasi
+    tidak memerlukan virtualisasi operasi sistem secara penuh, \emph{container} adalah alternatif
+    yang lebih baik secara efisiensi dan utilisasi.
+
+  \item Sifat Isolasi
+
+    Secara \emph{default}, \emph{container} memiliki proses dan sumber daya yang terisolasi, sehingga
+    aplikasi yang dijalankan melalui \emph{container} tidak mengganggu \emph{container} lain ataupun
+    proses lain yang berjalan di \emph{host}.
+
+\end{enumerate}
+
+\subsection{Podman}
+\label{sec:podman}
+
+Podman merupakan salah satu \emph{container engine} selain Docker. Sama seperti Docker,
+Podman digunakan untuk mengelola \emph{container} seperti menjalankan \emph{container},
+membuat \emph{container}, dan lain-lain. Untuk bisa mengelola \emph{container},
+\emph{container engine} seperti Podman dan Docker memerlukan \emph{container runtime} yang \emph{compliat}
+dengan OCI (\emph{Open Container Initiative}) seperti runc, crun, dan lain-lain. Podman diciptakan oleh
+Red Hat dan bersifat sumber terbuka.
+
+Secara fungsional, Podman sama seperti Docker, namun Podman memiliki beberapa perbedaan seperti berikut:
+
+\begin{enumerate}
+  
+  \item \emph{Daemonless}
+
+    Tidak seperti Docker yang yang memiliki proses \emph{daemon}, Podman bersifat \emph{daemonless}.
+    Proses \emph{daemon} pada Docker dijalankan oleh \emph{root user} sehingga rentan
+    terhadap serangan. Dengan mekanisme \emph{daemonless}, \emph{container} dapat dibuat
+    secara \emph{rootless} yang lebih aman dibandingkan dengan \emph{rootful}.
+
+  \item \emph{Rootless Containers}
+
+    Podman mendukung penuh untuk menjalankan \emph{container} sebagai pengguna \emph{non-root}.
+    Menjalankan \emph{container} sebagai pengguna \emph{non-root} dapat menghindari masalah keamanan
+    jika isolasi dari \emph{container} terkompromisasi.
+
+  \item Manajemen \emph{pod}
+
+    Pod merupakan konsep dari Kubernetes berupa kumpulan dari satu atau lebih \emph{container}.
+    Kumpulan \emph{container} tersebut saling berbagi sumber daya seperti \emph{network namespaces}
+    atau \emph{storage}.
+
+\end{enumerate}
+
+Penggunaan Podman dan Docker tidak berbeda jauh. Podman diciptakan sebagai alternatif Docker.
+Podman atau Docker akan digunakan pada implementasi tugas akhir ini untuk membuat \emph{container}
+dari aplikasi basis data Postgresql dan Redis. Teori dasar mengenai Postgresql dan Redis akan
+dijelaskan pada subbab \ref{sec:postgresql} dan subbab \ref{sec:redis}.
+
+\subsection{Postgresql}
+\label{sec:postgresql}
+
+Postgresql merupakan perangkat lunak sistem manajemen basis data relasional
+(\emph{Relational Database Management System}/RDBMS) yang bersifat sumber terbuka.
+Postgresql menggunakan bahasa SQL (\emph{Structured Query Language}) dalam pengoperasiannya
+seperti menambah data, mengambil data, dan menghapus data.
+
+Postgresql memiliki beberapa fitur, yaitu mendukung banyak tipe data seperti \emph{integer} dan
+\emph{string}, mendukung integritas data, memiliki performa tinggi dengan \emph{indexing},
+mendukung konkurensi dengan menggunakan \emph{Multi-Version Concurrency Control} atau MVCC,
+\emph{reliability} dan \emph{disaster recovery} dengan cara replikasi dan \emph{Write-Ahead Logging} atau WAL,
+keamanan dengan autentikasi, mendukung ekstensibilitas, dan \emph{internationalisation}.
+
+\subsection{Redis}
+\label{sec:redis}
+
+Redis adalah perangkat lunak sumber terbuka basis data dalam memori (\emph{in-memory}).
+Redis menawarkan performa tinggi karena setiap data yang disimpan berada di RAM, tidak seperti
+perangkat lunak basis data lainnya yang menyimpan data di \emph{disk}.
+
+Redis sebagai perangkat lunak basis data dapat digunakan untuk menyimpan data sama seperti
+aplikasi basis data lainnya, namun performa tinggi yang ditawarkan 
+dari mekanisme Redis dalam proses penyimpanan digunakan pada beberapa skenario
+seperti berikut:
+
+\begin{enumerate}
+
+  \item \emph{Caching}
+    
+    Proses \emph{caching} adalah proses menyimpan data yang sering diakses ke dalam
+    lokasi sementara yang bisa diakses dengan cepat. Dengan menyimpan data yang serin
+    diakses ke lokasi yang dapat diakses dengan cepat, proses pengambilan selanjutnya
+    dari data tersebut dapat diselesaikan dengan lebih cepat.
+
+  \item \emph{Message Broker/Queue}
+
+    Proses \emph{message broker}/\emph{queue} dapat dianalogikan dengan proses antrian.
+    Data dapat dikirimkan dengan \emph{message broker}/\emph{queue} dan konsumer menerima
+    data tersebut kemudian menggunakannya untuk melakukan suatu proses.
+
+\end{enumerate}
+
+Redis akan digunakan sebagai basis data antrian \emph{queue} dalam proses \emph{provisioning} dari
+\emph{virtual machine}. Antrian tersebut digunakan untuk menghindari konflik dalam proses \emph{provisioning}
+lebih dari satu \emph{virtual machine} dalam waktu yang bersamaan.
+
+\subsection{\emph{Multi-tenancy}}
 \label{sec:multi-tenancy}
 
 \emph{Multi-tenancy} secara bahasa memiliki arti banyak pengguna atau \emph{tenant}. Dalam konteks
@@ -222,70 +464,230 @@ memiliki \emph{size} yang lebih kecil secara keseluruhan. K3s berbentuk
 untuk setiap pengguna namun definisi tersebut masih bersifat luas karena implementasi
 dari \emph{multi-tenancy} berbeda untuk setiap \emph{service models} \parencite{6830928}.
 
-\section{\emph{Virtual Machine}}
+Pada \emph{service model} yang berupa \emph{Software-as-a-Service} (SaaS), aplikasi
+disediakan oleh \emph{Cloud Service Provider} (CSP) berupa jasa. Definisi \emph{multi-tenancy}
+pada model ini adalah satu atau lebih pengguna menggunakan aplikasi yang sama tanpa melihat
+sumber daya yang digunakan. Pada \emph{service model} yang berupa \emph{Infrastructure-as-a-Service} (IaaS), pengguna
+dapat mengatur sendiri infrastruktur yang disediakan oleh CSP seperti \emph{storage resource} dan \emph{network resource}.
+Definisi \emph{multi-tenancy} pada model ini adalah dua atau lebih \emph{virtual machine}
+yang dimiliki oleh pengguna yang berbeda berada pada satu mesin fisik yang sama.
+
+Dalam implementasi tugas akhir ini, definisi \emph{multi-tenancy} yang digunakan adalah definisi
+\emph{multi-tenancy} dalam IaaS, yaitu dua atau lebih \emph{virtual machine} yang dimiliki oleh
+pengguna yang berbeda berada pada satu mesin fisik yang sama. Dalam proses \emph{provisioning}, jika
+sebuah mesin fisik sudah memiliki \emph{virtual machine} dari pengguna pertama dan
+masih memiliki cukup \emph{resource} untuk melayani pengguna lainnya, mesin tersebut
+akan membuat \emph{virtual machine} baru untuk pengguna baru tersebut.
+
+\subsection{\emph{Virtual Machine}}
 \label{sec:virtual-machine}
 
 \emph{Virtual machine} merupakan lingkungan komputasi terisolasi
 yang berjalan di atas mesin fisik. Digagaskan pertama kali oleh IBM
 dengan sebuah konsep bernama \emph{time-sharing}. \emph{Time-sharing}
 memungkinkan sebuah mesin digunakan oleh lebih dari satu pengguna sehingga
-pengguna tersebut terlihat mempunyai sebuah mesin tersendiri.
+pengguna tersebut terlihat memiliki sebuah mesin tersendiri \parencite{ibm-website}.
+Arsitektur dari \emph{virtual machine} dapat dilihat pada gambar \ref{fig:arsitektur-virtual-machine}
 
 \begin{figure}[H]
   \centering
 
   % Ubah dengan nama file gambar dan ukuran yang akan digunakan
-  \includegraphics[scale=0.5]{gambar/virtual-machine-architecture.png}
+  \includegraphics[scale=0.6]{gambar/virtual-machine-architecture.png}
 
   % Ubah dengan keterangan gambar yang diinginkan
   \caption{Arsitektur \emph{virtual machine}}
   \label{fig:arsitektur-virtual-machine}
 \end{figure}
 
-\subsection{QEMU}
+\emph{Virtual machine} dikelola oleh hypervisor. Hypervisor bertugas untuk
+mengelola \emph{virtual machine} dengan cara mengabstraksi sumber daya perangkat keras
+seperti CPU, \emph{memory}, dan penyimpanan dari \emph{host} yang nantinya akan digunakan
+oleh \emph{virtual machine}. Hypervisor sendiri terdiri dari beberapa jenis yaitu hypervisor tipe 1
+dan hypervisor tipe 2. Perbedaan dari kedua jenis tersebut adalah teknik virtualisasi yang digunakan.
+Hypervisor tipe 1 berjalan langsung di atas \emph{hardware} atau biasa disebut \emph{native hypervisor},
+sedangkan hypervisor tipe 2 berjalan di atas sistem operasi \parencite{Aalam_2021}. Perbedaan
+dari hypervisor tipe 1 dan hypervisor tipe 2 dapat dilihat pada gambar \ref{fig:arsitektur-hypervisor-1-2}.
 
-QEMU adalah emulator dan virtualisasi mesin generik dan sumber terbuka.
-
-\section{Libvirt}
-\label{sec:libvirt}
-
-Libvirt merupakan API untuk berkomunikasi dengan teknologi virtualisasi yang disediakan
-oleh sistem operasi.
-
-\section{\emph{Network Bridge}}
-\label{sec:network-bridge}
-
-NKASNDLKASNLDASNK
-
-\section{gRPC}
-
-\section{Roket Luar Angkasa}
-\label{sec:roketluarangkasa}
-
-% Contoh input gambar
 \begin{figure}[H]
   \centering
 
   % Ubah dengan nama file gambar dan ukuran yang akan digunakan
-  \includegraphics[scale=0.35]{gambar/roketluarangkasa.jpg}
+  \includegraphics[scale=0.55]{gambar/Type-1-and-type-2-hypervisors.png}
 
   % Ubah dengan keterangan gambar yang diinginkan
-  \caption{Peluncuran roket luar angkasa \emph{Discovery} \parencite{roketluarangkasa}.}
-  \label{fig:roketluarangkasa}
+  \caption{Hypervisor tipe 1 dan tipe 2 \parencite{nfv}}
+  \label{fig:arsitektur-hypervisor-1-2}
 \end{figure}
 
-Roket luar angkasa merupakan \lipsum[1]
+Hypervisor memiliki beberapa fitur untuk mengelola \emph{virtual machine}, yaitu:
 
-\emph{Discovery}, Gambar \ref{fig:roketluarangkasa}, merupakan \lipsum[2]
+\begin{enumerate}
+  
+  \item Abstraksi sumber daya fisik. Hypervisor menyediakan abstraksi untuk sumber
+    daya dari mesin fisik. Abstraksi ini membatasi sumber daya fisik dari mesin yang
+    nantinya bisa dipakai oleh \emph{virtual machine}. Dengan abstraksi ini,
+    \emph{virtual machine} tidak perlu mengetahui sistem operasi dan \emph{hardware}
+    dari \emph{host}.
 
-\subsection{Hukum Newton}
-\label{subsec:hukumnewton}
+  \item Isolasi sumber daya fisik. Hypervisor membagi sumber daya fisik dari \emph{host}
+    dan membuat entitas terisolasi. Hypervisor memperbolehkan setiap \emph{virtual machine} 
+    untuk berjalan secara independen. \emph{Virtual machine} yang terkompromisasi tidak
+    akan mengganggu atau membuat \emph{virtual machine} lain juga terkompromisasi. Hal
+    tersebut merupakan fungsi dari fitur isolasi sumber daya fisik. Tiap-tiap sumber daya fisik
+    yang digunakan oleh \emph{virtual machine} saling terisolasi satu sama lain dan juga
+    terisolasi dari sumber daya fisik yang digunakan oleh sistem operasi \emph{host}.
 
-Newton \parencite{newton1687} pernah merumuskan bahwa \lipsum[1]
-Kemudian menjadi persamaan seperti pada persamaan \ref{eq:hukumpertamanewton}.
+  \item Pengembalian kondisi \emph{virtual machine}. Setiap \emph{virtual machine} menggunakan
+    sumber daya fisik dalam bentuk \emph{virtual disk}. \emph{Virtual disk} ini disimpan
+    dalam bentuk \emph{file}. \emph{Virtual machine} menyimpan \emph{snapshot} dari \emph{virtual disk}
+    dari waktu ke waktu atau setiap ada perubahan dalam \emph{virtual disk} tersebut. Ketika \emph{virtual machine}
+    mengalami kendala atau masalah, \emph{virtual machine} dapat dikembalikan ke kondisi \emph{virtual disk}
+    yang masih berfungsi sebelumnya.
 
-% Contoh pembuatan persamaan
-\begin{equation}
-  \label{eq:hukumpertamanewton}
-  \sum \mathbf{F} = 0\; \Leftrightarrow\; \frac{\mathrm{d} \mathbf{v} }{\mathrm{d}t} = 0.
-\end{equation}
+\end{enumerate}
+
+\subsubsection{QEMU}
+
+QEMU \parencite{qemu-website} adalah emulator dan \emph{virtualizer} mesin generik dan bersifat sumber terbuka.
+QEMU dapat digunakan dengan beberapa cara tetapi yang paling umum digunakan adalah sebagai
+emulasi sistem. Hasil emulasi sistem tersebut menyediakan model virtual dari sebuah mesin
+utuh seperti CPU, memori, dan emulasi perangkat untuk menjalankan sistem operasi \emph{guest}.
+Pada mode tersebut, CPU bekerja secara teremulasi sepenuhnya atau dapat bekerja sama
+dengan hypervisor seperti KVM, Xen, atau hypervisor lainnya untuk menjalankan sistem
+operasi \emph{guest} secara langsung di CPU \emph{host}.
+Dalam implementasi tugas akhir ini, QEMU akan digunakan sebagai emulator dan KVM
+akan digunakan sebagai hypervisor. Penjelasan mengenai KVM akan dijelaskan pada bab \ref{sec:kvm}.
+
+\subsubsection{KVM}
+\label{sec:kvm}
+
+KVM atau \emph{Kernel-based Virtual Machine} \parencite{kvm-website} merupakan \emph{full virtualizer} sumber terbuka
+untuk Linux yang memiliki x86 \emph{hardware} dan salah satu hypervisor tipe 1. KVM memiliki ekstensi untuk dua jenis
+CPU, yaitu Intel dengan teknologi Intel VT dan AMD dengan teknologi AMD-V. KVM terintegrasi
+langsung dengan kernel Linux mulai versi 2.6.20 dengan menyediakan modul kernel kvm.ko yang dapat dimuat.
+Modul tersebut menyediakan inti dari infrastruktur untuk virtualisasi. Selain itu, KVM
+juga menyediakan modul spesifik untuk Intel yaitu kvm-intel.ko dan untuk AMD yaitu
+kvm-amd.ko. Dengan menggunakan KVM, sistem operasi Linux dapat menjalankan satu atau lebih
+mesin virtual. Setiap mesin virtual memiliki \emph{hardware} virtual pribadi seperti
+\emph{network card}, \emph{disk}, dan \emph{graphics adapter}.
+
+\subsection{Libvirt}
+\label{sec:libvirt}
+
+Libvirt adalah \emph{toolkit} sumber terbuka untuk mengelola platform virtualisasi.
+Libvirt memudahkan proses pengelolaan platform virtualisasi dengan menyediakan API yang konsisten
+dan terstandardisasi untuk banyak jenis hypervisor seperti KVM, QEMU, Xen, VMWare,
+dan lain-lain. API tersebut disediakan oleh libvirt sebagai antarmuka interaksi dengan hypervisor.
+
+Libvirt menggunakan arsitektur klien-server, dimana server dari Libvirt berupa daemon
+bernama libvirtd yang akan berinteraksi dengan hypervisor yang digunakan dan klien akan
+berkomunikasi dengan server atau libvirtd menggunakan protokol yang sudah ditetapkan.
+Proses komunikasi antara klien dan server dapat dilakukan dengan beberapa cara, salah
+satunya adalah secara terprogram dengan menggunakan bahasa pemrograman.
+
+Libvirt menyediakan \emph{bindings} untuk beberapa bahasa pemrograman seperti Golang, C, Python, dan
+lain-lain. Selain itu, Libvirt juga mendukung banyak fitur dari virtualisasi seperti
+membuat \emph{virtual machine}, menghentikan \emph{virtual machine} dan menghapus \emph{virtual machine}.
+
+\subsection{\emph{Network Bridge}}
+\label{sec:network-bridge}
+
+\emph{Network bridge} merupakan sebuah perangkat yang terdapat pada lapisan ke-dua atau \emph{data link layer} pada
+model konseptual OSI atau \emph{Open System Interconnection}. OSI memecah komunikasi jaringan
+menjadi tujuh bagian atau lapisan. Model OSI memudahkan berbagai sistem komunikasi
+untuk berkomunikasi menggunakan protokol standar.
+
+\emph{Network bridge} menggabungkan dua atau lebih segmen jaringan sehingga terlihat
+seperti satu jaringan yang besar. Fungsi dari \emph{network bridge} adalah untuk meneruskan
+trafik atau data berdasarkan alamat dari MAC (\emph{Media Access Control}). Tujuan
+penggunaan \emph{network bridge} adalah memperluas jaringan lokal atau
+membagi jaringan yang lebih besar untuk meningkatkan kinerja dan keamanan \parencite{network-bridge}.
+
+\subsubsection{Linux \emph{Bridge}}
+
+Linux \emph{bridge} adalah salah satu implementasi dari \emph{network bridge} dalam sistem
+operasi Linux. Implementasi Linux \emph{bridge} pada kernel Linux sudah
+terintegrasi sejak versi 2.4 \parencite{linux-foundation-bridge-website}.
+Pada Linux \emph{bridge}, \emph{network bridge} diimplementasikan pada tingkat
+perangkat lunak pada kernel Linux. Sama seperti kegunaan dari \emph{network bridge},
+Linux \emph{bridge} dapat menyambungkan antarmuka jaringan satu dengan antarmuka jaringan
+lainnya yang ada pada sebuah mesin Linux. Visualisasi dari Linux \emph{bridge}
+dapat dilihat pada gambar \ref{fig:linux-bridge}
+
+\begin{figure}[H]
+  \centering
+
+  % Ubah dengan nama file gambar dan ukuran yang akan digunakan
+  \includegraphics[scale=0.3]{gambar/linux-bridge.png}
+
+  % Ubah dengan keterangan gambar yang diinginkan
+  \caption{Visualisasi Linux \emph{bridge}}
+  \label{fig:linux-bridge}
+\end{figure}
+
+\emph{Virtual machine} yang dibuat dapat mengutilisasi Linux
+\emph{bridge} untuk tersambung dengan jaringan lokal yang sama dengan \emph{host}.
+Dengan begitu, alamat IP yang didapat oleh \emph{virtual machine} berada dalam jangkauan
+yang sama dengan alamat IP dari \emph{host}, sehingga \emph{virtual machine} tersebut
+terlihat sebagai satu mesin fisik tersendiri.
+
+\subsection{RPC}
+
+RPC atau \emph{Remote Procedure Call} adalah sebuah paradigma komunikasi antar program
+melalui jaringan internet. RPC memungkinkan sebuah program untuk mengeksekusi sebuah
+prosedur atau fungsi yang terdapat pada komputer lain.
+
+\subsubsection{gRPC}
+
+gRPC adalah implementasi dari RPC yang diciptakan oleh Google \parencite{grpc-website-docs-overview}.
+
+\subsection{Cloud-init}
+
+Cloud-init merupakan sebuah program sumber terbuka yang berjalan pada saat
+\emph{booting} awal dari sebuah \emph{virtual machine} atau \emph{cloud instance}.
+Fungsi utama dari Cloud-init adalah untuk menyesuaikan \emph{virtual machine}
+atau \emph{cloud instance} dengan data yang diberikan oleh pengguna. Dengan begitu,
+setiap \emph{virtual machine} atau \emph{cloud instance} yang dijalankan dengan Cloud-init
+akan identik dengan semua konfigurasi yang digunakan. Fungsi tersebut mempermudah dalam 
+mengotomisasi konfigurasi awal dari \emph{virtual machine} atau \emph{cloud instance}.
+
+Cloud-init mendukung banyak jenis konfigurasi. Beberapa jenis konfigurasi yang dapat digunakan
+pada Cloud-init adalah sebagai berikut:
+
+\begin{enumerate}
+  
+  \item Antarmuka Jaringan
+
+    Cloud-init dapat mengatur antarmuka jaringan yang digunakan pada \emph{virtual machine}
+    atau \emph{cloud instance}. Selain itu, Cloud-init juga dapat menyesuaikan konfigurasi
+    antarmuka jaringan tersebut seperti jenis IP, alamat IP, dan lain-lain
+
+  \item \emph{User} dan \emph{Group} Linux
+
+    Selain mengkonfigurasi jaringan, Cloud-init juga mendukung pembuatan \emph{user} dan \emph{group} pada
+    sistem operasi Linux pada saat pertama kali \emph{booting}. Konfigurasi lain seperti nama \emph{user},
+    nama \emph{group}, \emph{group} dari \emph{user}, dan \emph{password} dari \emph{user} juga didukung
+    oleh Cloud-init.
+
+  \item Instalasi \emph{package} dengan \emph{package manager}
+
+    Cloud-init mendukung instalasi \emph{package} menggunakan \emph{package manager} dari distribusi Linux
+    seperti Ubuntu. 
+
+  \item \emph{Shell Scripts}
+
+    Cloud-init mendukung penggunaan \emph{shell script} pada saat proses Cloud-init
+    berjalan. \emph{Shell scripts} dapat digunakan untuk konfigurasi yang tidak didukung
+    oleh Cloud-init seperti menjalankan aplikasi \emph{command line interface} untuk mengunduh
+    menggunakan wget dan lain-lain.
+
+\end{enumerate}
+
+\subsection{Golang}
+
+Golang merupakan bahasa pemrograman yang diciptakan oleh Google dan pada 
+tahun 2009 dibagi secara publik. \emph{Libraries}
+serta fitur-fitur yang ditawarkan oleh Golang seperti \emph{pointer} dan \emph{error as a value}
+dapat digunakan dalam banyak kebutuhan seperti pembuatan \emph{services}, \emph{command line interface},
+dan lain-lain \parencite{go-website}.

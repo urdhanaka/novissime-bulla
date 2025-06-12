@@ -3,11 +3,6 @@
 
 % Ubah bagian-bagian berikut dengan isi dari pendahuluan
 
-Penelitian atau implementasi ini dilatarbelakangi oleh pesatnya
-penggunaan \emph{cloud computing} serta kebutuhan untuk meningkatkan
-utilisasi penggunaan komputer di laboratorium Departemen Teknik Informatika
-Institut Teknologi Sepuluh Nopember.
-
 \section{Latar Belakang}
 \label{sec:latarbelakang}
 
@@ -25,35 +20,41 @@ yang merupakan layanan Kubernetes. Semua layanan tersebut merupakan bentuk imple
 komputasi awan karena pengguna tidak perlu memiliki sumber daya tersebut secara
 fisik namun menggunakan sumber daya komputasi yang ditawarkan oleh penyedia jasa seperti GCP.
 
-Pada tugas akhir ini, akan dikembangkan sebuah sistem \emph{provisioning} untuk virtual machine
-secara dinamis yang terletak di komputer Teknik Informatika ITS. \emph{Virtual machines}
-yang dibuat akan secara otomatis tergabung dalam sebuah klaster Kubernetes yang nantinya
-dapat digunakan oleh pengguna. 
+Teknologi komputasi awan sangat bermanfaat pada banyak studi kasus. Salah satunya adalah pengguna
+dapat memiliki sumber daya komputasi tambahan kapan saja. Ketika pengguna ingin melakukan komputasi
+yang harus dilakukan oleh sumber daya komputasi yang besar dan pengguna tersebut tidak memiliki
+sumber daya komputasi tersebut secara fisik, pengguna tersebut dapat menyewa sumber daya komputasi
+tambahan dari penyedia jasa sumber daya komputasi. Setelah proses komputasi tersebut selesai, pengguna
+dapat mengembalikan sumber daya komputasi tersebut.
 
-\section{Permasalahan}
-\label{sec:permasalahan}
+Di Teknik Informatika ITS, terdapat banyak komputer di lab yang bisa digunakan oleh mahasiswa saat
+pembelajaran berlangsung. Komputer-komputer tersebut biasa digunakan pada saat terjadi proses pembelajaran
+namun mati saat tidak terjadi proses pembelajaran. Untuk meningkatkan utilisasi dari komputer-komputer tersebut,
+sistem \emph{provisioning} akan dikembangkan yang nantinya akan menggunakan komputer-komputer tersebut sebagai
+\emph{worker} untuk klaster Kubernetes. Dengan begitu, komputer-komputer tersebut akan terutilisasi
+meskipun kegiatan pembelajaran sedang tidak berlangsung. Selain itu, klaster yang dibuat
+dapat digunakan sebagai tambahan sumber daya komputasi dalam melakukan komputasi yang berat.
+
+Pada tugas akhir ini, akan dikembangkan sebuah sistem \emph{provisioning} untuk virtual machine
+secara dinamis yang terletak di komputer Teknik Informatika ITS. \emph{Virtual machines} atau VM
+yang dibuat akan secara otomatis tergabung dalam sebuah klaster Kubernetes yang nantinya
+dapat digunakan oleh pengguna.
+
+\section{Rumusan Permasalahan}
+\label{sec:rumusanpermasalahan}
 
 Dari latar belakang tersebut maka dapat dijabarkan permasalahan sebagai berikut:
 
 \begin{enumerate}[nolistsep]
 
+  \item Bagaimana cara merancang sistem \emph{provisioning} VM yang dapat diimplementasikan
+    di lingkungan Teknik Informatika ITS?
+
   \item Bagaimana cara mengimplementasikan \emph{multi-tenancy} pada proses \emph{provisioning}
     klaster Kubernetes?
 
   \item Bagaimana cara untuk membuat \emph{virtual machine} yang tergabung
-    dalam sebuah \emph{cluster} secara dinamis?
-
-\end{enumerate}
-
-\section{Tujuan}
-\label{sec:Tujuan}
-
-Tujuan dari penelitian atau implementasi ini adalah sebagai berikut:
-
-\begin{enumerate}[nolistsep]
-
-  \item Membuat sistem \emph{provisioning} yang dapat membuat \emph{virtual machine}
-    secara dinamis sesuai dengan kriteria \emph{resource} permintaan pengguna.
+    dalam sebuah klaster secara dinamis?
 
 \end{enumerate}
 
@@ -64,52 +65,35 @@ Batasan-batasan dari penelitian atau implementasi adalah sebagai berikut:
 
 \begin{enumerate}[nolistsep]
 
-  \item \emph{Provisioning} terjadi di lingkungan Teknik Informatika Institut
+  \item \emph{Provisioning} dilakukan di lingkungan Teknik Informatika Institut
     Teknologi Sepuluh Nopember
 
+  \item Hasil implementasi berupa aplikasi \emph{provisioning} yang terdapat di setiap
+    komputer yang akan digunakan dan aplikasi web sebagai \emph{dashboard}
+
+  \item Kubernetes yang digunakan adalah K3s sebagai salah satu distribusi
+    Kubernetes dengan versi v1.33.1+k3s1
+
+  \item Aplikasi web berupa \emph{dashboard} dan aplikasi \emph{provisioning} dibuat
+    menggunakan bahasa Golang versi 1.24.3
+
+  \item Aplikasi \emph{provisioning} menggunakan libvirt dan libvirtd dengan versi 11.0.0
+
+  \item Evaluasi dari sistem yang dibuat adalah 
+
 \end{enumerate}
 
-\section{Sistematika Penulisan}
+\section{Tujuan}
+\label{sec:Tujuan}
+
+Tujuan dari implementasi ini adalah untuk mengembangkan sistem \emph{provisioning}
+yang dapat membuat VM dan secara otomatis tergabung ke dalam sebuah klaster Kubernetes secara dinamis sesuai dengan kriteria
+\emph{resource} permintaan pengguna.
+
+\section{Manfaat}
 \label{sec:sistematikapenulisan}
 
-Laporan penelitian tugas akhir ini terbagi menjadi beberapa bagian seperti
-berikut:
-
-\begin{enumerate}[nolistsep]
-
-  \item \textbf{BAB I Pendahuluan}
-
-        Bab ini berisi pengantar sekaligus gambaran tugas akhir
-        secara garis besar. Bab ini terdiri dari lima subbab, yaitu subbab
-        latar belakang, subbab permasalahan, subbab tujuan, subbab batasan
-        masalah, dan subbab sistematika penulisan.
-
-        \vspace{2ex}
-
-  \item \textbf{BAB II Tinjauan Pustaka}
-
-        Bab ini berisi tinjauan pustaka dari teknologi-teknologi
-        yang telah diciptakan sebelumnya untuk membantu dalam proses
-        implementasi.
-
-        \vspace{2ex}
-
-  \item \textbf{BAB III Desain dan Implementasi Sistem}
-
-        Bab ini berisi penjelasan desain dan implementasi dari sistem.
-
-        \vspace{2ex}
-
-  \item \textbf{BAB IV Pengujian dan Analisa}
-
-        Bab ini berisi pengujian dan analisa dari sistem yang telah dibuat.
-        Pengujian dan analisa dilakukan untuk mengetahui apakah sistem yang
-        telah dibuat ... .
-
-        \vspace{2ex}
-
-  \item \textbf{BAB V Penutup}
-
-        Bab ini berisi
-
-\end{enumerate}
+Manfaat dari implementasi ini adalah untuk menyediakan sebuah sistem penyewaan
+sumber daya komputasi yang berada di Teknik Informatika Institut Teknologi Sepuluh
+Nopember. Diharapkan sistem penyewaan ini dapat digunakan sebagai sumber daya komputasi
+tambahan yang dapat digunakan untuk proses komputasi yang berat.
