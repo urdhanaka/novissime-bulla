@@ -95,9 +95,9 @@ BibTex yang digunakan pada file ini.
 
 @misc{grpc-website-docs-overview,
   author = {{gRPC Authors}},
-  title = {Core concepts, architecture and lifecycle},
+  title = {Documentation},
   year = {2024},
-  url = {https://grpc.io/docs/what-is-grpc/core-concepts/},
+  url = {https://grpc.io/docs/},
   note = "[Online; diakses pada 11 Juni 2025]",
 }
 
@@ -105,7 +105,9 @@ BibTex yang digunakan pada file ini.
   author = {{The Linux Foundation}},
   title = {Bridge Wiki},
   year = {2021},
-  url = {https://wiki.linuxfoundation.org/networking/bridge#what_does_a_bridge_do},
+  url = {
+         https://wiki.linuxfoundation.org/networking/bridge#what_does_a_bridge_do
+         },
   note = "[Online; diakses pada 9 Juni 2025]",
 }
 @misc{go-website,
@@ -220,7 +222,6 @@ BibTex yang digunakan pada file ini.
   author = {Singh, Jaswinder},
   institution = {Blekinge Institute of Technology},
   pages = {30},
-  school = {, Blekinge Institute of Technology},
   title = {Performance evaluation of Linux Bridge and OVS in Xen},
   keywords = {Bitrate, Linux Bridge, Open vSwitch, Xen, Virtualization},
   abstract = {Virtualization is the key technology which has provided smarter
@@ -247,4 +248,78 @@ BibTex yang digunakan pada file ini.
   year = {2015},
 }
 
+@article{implementing-rpc,
+  author = {Birrell, Andrew D. and Nelson, Bruce Jay},
+  title = {Implementing remote procedure calls},
+  year = {1984},
+  issue_date = {February 1984},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {2},
+  number = {1},
+  issn = {0734-2071},
+  url = {https://doi.org/10.1145/2080.357392},
+  doi = {10.1145/2080.357392},
+  journal = {ACM Trans. Comput. Syst.},
+  month = feb,
+  pages = {39–59},
+  numpages = {21},
+  keywords = {transport layer protocols, remote procedural calls, performance of
+              communication protocols, inter-process communication, distributed
+              naming and binding},
+}
 
+  @phdthesis{rpc,
+  author = {Nelson, Bruce Jay},
+  title = {Remote procedure call},
+  year = {1981},
+  publisher = {Carnegie Mellon University},
+  address = {USA},
+  abstract = {Remote procedure call is the synchronous language-level transfer
+              of control between programs in disjoint address spaces whose
+              primary communication medium is a narrow channel. The thesis of
+              this dissertation is that remote procedure call (RPC) is a
+              satisfactory and efficient programming language primitive for
+              constructing distributed systems. A survey of existing remote
+              procedure mechanisms shows that past RPC efforts are weak in
+              addressing the five crucial issues: uniform call semantics, binding
+              and configuration, strong typechecking, parameter functionality,
+              and concurrency and exception control. The body of the dissertation
+              elaborates these issues and defines a set of corresponding
+              essential properties for RPC mechanisms. These properties must be
+              satisfied by any RPC mechanism that is fully and uniformly
+              integrated into a programming language for a homogeneous
+              distributed system. Uniform integration is necessary to meet the
+              dissertation's fundamental goal of syntactic and semantic
+              transparency for local and remote procedures. Transparency is
+              important so that programmers need not concern themselves with the
+              physical distribution of their programs.In addition to these
+              essential language properties, a number of pleasant properties are
+              introduced that ease the work of distributed programming. These
+              pleasant properties are good performance, sound remote interface
+              design, atomic transactions, respect for autonomy, type translation
+              , and remote debugging.With the essential and pleasant properties
+              broadly explored, the detailed design of an RPC mechanism that
+              satisfies all of the essential properties and the performance
+              property is presented. Two design approaches are used: The first
+              assumes full programming language support and involves changes to
+              the language's compiler and binder. The second involves no language
+              changes, but uses a separate translator--a source-to-source RPC
+              compiler--to implement the same functionality.Design decisions
+              crucial to the efficiency of the mechanism are made using a set of
+              RPC performance lessons. These lessons are based on the empirical
+              performance evaluation of a sequence of five working RPC mechanisms
+              , each one faster than its predecessor. Some expected results about
+              the costs of parameter copying, process switching, and runtime type
+              manipulation are confirmed; a surprising result about the price of
+              protocol layering is presented as well. These performance lessons,
+              applied in concert, reduce the roundtrip time for a remote
+              procedure call by a remarkable factor of 35. For moderate speed
+              personal computers communicating over an Ethernet, for example, a
+              simple remote call takes 800 microseconds; on a higher speed
+              personal computer, the same remote call takes 149 microseconds. In
+              both cases the remote call takes about 20 times longer than the
+              same local call. This represents a substantial performance
+              improvement over other operational RPC mechanisms.},
+  note = {AAI8204168},
+}
