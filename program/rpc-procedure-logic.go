@@ -1,40 +1,77 @@
-func (n *NodeServer) CreateMaster(
-	c context.Context,
-	masterRequirement *proto_model.CreateMasterRequest,
+func (s *NodeServer) CreateMaster(
+    ctx context.Context,
+    createMasterRequest *proto_model.CreateMasterRequest,
 ) (*proto_model.CreateMasterResponse, error) {
-	masterIpAddress, err := n.virtualizationService.CreateMaster(
-		context.Background(),
-		virtualization_model.NodeCreateRequest{
-			IsMaster: true,
-			Token:    masterRequirement.Token,
-			Cpu:      masterRequirement.Requirements.GetCpu(),
-			Memory:   masterRequirement.Requirements.GetMemory(),
-			Storage:  masterRequirement.Requirements.GetStorage(),
-		})
-	if err != nil {
-		return new(proto_model.CreateMasterResponse), err
-	}
+    provisionCtx, cancel := context.WithCancel(ctx)
+    defer cancel()
 
-	return &proto_model.CreateMasterResponse{
-		IpAddress: masterIpAddress,
-	}, nil
+    res := new(proto_model.CreateMasterResponse)
+
+    instanceName := createMasterRequest.Requirements.NodeName
+
+    virtSpecs := virtualization_model.CreateInstanceRequest{
+        Name:     instanceName,
+        IsMaster: true,
+        Token:    createMasterRequest.ClusterToken,
+        Cpu:      createMasterRequest.Requirements.Cpu,
+        Memory:   createMasterRequest.Requirements.Memory,
+        Storage:  createMasterRequest.Requirements.Storage,
+    }
+
+    err := s.queue.AddToQueue(provisionCtx, virtSpecs)
+    if err != nil {
+        return res, err
+    }
+
+    go sendLogs(instanceName, createMasterRequest.ClusterName)
+
+    sub := s.queue.Subscribe(ctx, instanceName)
+    defer sub.Close()
+
+    msgCh := sub.Channel()
+    select {
+    case msg := <-msgCh:
+        instanceRes := new(virtualization_model.VirtCreateInstanceResponse)
+
+        _ = json.Unmarshal([]byte(msg.Payload), instanceRes)
+
+        res.DashboardToken = instanceRes.DashboardToken
+        res.MasterIpAddress = instanceRes.MasterIpAddress
+
+    case <-time.After(PROVISIONING_TIMEOUT * time.Second):
+        fmt.Println("timeout exceeded")
+    }
+
+    return res, nil
 }
 
-func (n *NodeServer) CreateWorker(
-	c context.Context,
-	workerRequest *proto_model.CreateWorkerRequest,
+func (s *NodeServer) CreateWorker(
+    ctx context.Context,
+    createWorkerRequest *proto_model.CreateWorkerRequest,
 ) (*proto_model.CreateWorkerResponse, error) {
-	err := n.virtualizationService.CreateWorker(context.Background(), virtualization_model.NodeCreateRequest{
-		IsMaster:        false,
-		MasterIpAddress: workerRequest.IpAddress,
-		Token:           workerRequest.Token,
-		Cpu:             workerRequest.Requirements.GetCpu(),
-		Memory:          workerRequest.Requirements.GetMemory(),
-		Storage:         workerRequest.Requirements.GetStorage(),
-	})
-	if err != nil {
-		return new(proto_model.CreateWorkerResponse), err
-	}
+    provisionCtx, cancel := context.WithCancel(ctx)
+    defer cancel()
 
-	return new(proto_model.CreateWorkerResponse), nil
+    res := new(proto_model.CreateWorkerResponse)
+
+    instanceName := createWorkerRequest.Requirements.NodeName
+
+    virtSpecs := virtualization_model.CreateInstanceRequest{
+        Name:            instanceName,
+        IsMaster:        false,
+        MasterIpAddress: createWorkerRequest.MasterIpAddress,
+        Token:           createWorkerRequest.ClusterToken,
+        Cpu:             createWorkerRequest.Requirements.Cpu,
+        Memory:          createWorkerRequest.Requirements.Memory,
+        Storage:         createWorkerRequest.Requirements.Storage,
+    }
+
+    err := s.queue.AddToQueue(provisionCtx, virtSpecs)
+    if err != nil {
+        return res, err
+    }
+
+    go sendLogs(instanceName, createWorkerRequest.ClusterName)
+
+    return res, nil
 }

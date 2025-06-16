@@ -1,0 +1,17 @@
+#cloud-config
+hostname: %s
+locale: en_US.UTF-8
+timezone: Asia/Jakarta
+users:
+- default
+- name: user
+  groups: sudo
+  sudo: ALL=(ALL:ALL) ALL
+  plain_text_passwd: user
+  lock_passwd: false
+  shell: /bin/bash
+
+runcmd:
+- echo "installing k3s"
+- curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_EXEC="agent --server https://%s:6443 --token %s" sh -s -
+- echo "done"

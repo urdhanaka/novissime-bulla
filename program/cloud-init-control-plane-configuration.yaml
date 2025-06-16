@@ -1,0 +1,80 @@
+#cloud-config
+hostname: %s
+locale: en_US.UTF-8
+timezone: Asia/Jakarta
+users:
+- default
+- name: user
+  groups: sudo
+  sudo: ALL=(ALL:ALL) ALL
+  plain_text_passwd: user
+  lock_passwd: false
+  shell: /bin/bash
+
+write_files:
+- path: /root/service-account.yaml
+  content: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: admin-user
+      namespace: kubernetes-dashboard
+- path: /root/role-binding.yaml
+  content: |
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: admin-user
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+    subjects:
+    - kind: ServiceAccount
+      name: admin-user
+      namespace: kubernetes-dashboard
+- path: /etc/systemd/system/kube-dashboard.service
+  content: |
+    [Unit]
+    Description=Kubernetes dashboard
+    Wants=network-online.target
+    After=k3s.service
+
+    [Install]
+    WantedBy=multi-user.target
+
+    [Service]
+    Type=simple
+    User=root
+    Restart=always
+    RestartSec=5s
+    ExecStart=/usr/local/bin/k3s \
+        kubectl -n kubernetes-dashboard \
+        port-forward svc/kubernetes-dashboard-kong-proxy \
+        8443:443 --address 0.0.0.0 \
+
+runcmd:
+- |
+  echo "running command"
+  echo "updating and upgrading packages"
+  echo "installing necessary packages"
+
+  echo "installing k3s"
+  curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_EXEC="server --token %s" sh -s -
+
+  export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+  echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /etc/profile
+
+  echo "creating kubernetes dashboard"
+  helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+  helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+
+  echo "setting up user for kubernetes dashboard"
+  k3s kubectl apply -f /root/service-account.yaml -f /root/role-binding.yaml
+
+  echo "writing token and starting the dashboard..."
+  echo "waiting until all pods in the kubernetes-dashboard namespaces is running"
+  k3s kubectl wait pod --all --for=condition=Ready --namespace=kubernetes-dashboard --timeout=-1s
+  systemctl start kube-dashboard.service
+
+  echo "done"

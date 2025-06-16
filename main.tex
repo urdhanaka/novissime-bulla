@@ -26,11 +26,11 @@
 % Pengaturan kutipan artikel
 \usepackage[style=apa, backend=biber]{biblatex}
 
-% Pengaturan format daftar isi
+% Pengaturan format potongan kode
 \usepackage[titles]{tocloft}
-\setlength{\cftsecindent}{2em}
+\setlength{\cftsecindent}{1em}
 \setlength{\cftsubsecindent}{2em}
-\setlength{\cftsubsubsecindent}{2em}
+\setlength{\cftsubsubsecindent}{3em}
 \setlength{\cftbeforechapskip}{1.5ex}
 \setlength{\cftbeforesecskip}{1ex}
 \setlength{\cftbeforesubsecskip}{1ex}
@@ -41,12 +41,14 @@
 \setlength{\cftbeforelottitleskip}{0cm}
 \setlength{\cftfigindent}{0pt}
 \setlength{\cfttabindent}{0pt}
-\renewcommand{\cfttoctitlefont}{\hfill\Large\bfseries} % command untuk membuat heading bold dan besar
+\renewcommand{\cfttoctitlefont}{\hfill\Large\bfseries}
 \renewcommand{\cftaftertoctitle}{\hfill}
 \renewcommand{\cftloftitlefont}{\hfill\Large\bfseries}
 \renewcommand{\cftafterloftitle}{\hfill}
 \renewcommand{\cftlottitlefont}{\hfill\Large\bfseries}
 \renewcommand{\cftafterlottitle}{\hfill}
+\renewcommand{\cftchappresnum}{BAB\ }
+\setlength{\cftchapnumwidth}{3.2em}
 
 % Package lainnya
 \usepackage{changepage}
@@ -111,12 +113,12 @@
 
 % Pengaturan format judul bab
 \usepackage{titlesec}
-\titleformat{\chapter}[display]{\bfseries\Large}{BAB \centering\Roman{chapter}}{0ex}{\vspace{0ex}\centering}
+\titleformat{\chapter}[block]{\bfseries\Large}{BAB \centering\arabic{chapter}}{1ex}{\vspace{0ex}\centering}
 \titleformat{\section}{\bfseries\large}{\MakeUppercase{\thesection}}{1ex}{\vspace{1ex}}
 \titleformat{\subsection}{\bfseries\large}{\MakeUppercase{\thesubsection}}{1ex}{}
 \titleformat{\subsubsection}{\bfseries\large}{\MakeUppercase{\thesubsubsection}}{1ex}{}
 \titleformat{\subsubsubsection}{\bfseries\large}{\MakeUppercase{\thesubsubsubsection}}{1ex}{}
-\titlespacing{\chapter}{0ex}{0ex}{4ex}
+\titlespacing{\chapter}{0ex}{-5ex}{4ex}
 \titlespacing{\section}{0ex}{1ex}{0ex}
 \titlespacing{\subsection}{0ex}{0.5ex}{0ex}
 \titlespacing{\subsubsection}{0ex}{0.5ex}{0ex}
@@ -125,13 +127,6 @@
 \counterwithin{figure}{chapter}
 \counterwithin{table}{chapter}
 
-\input{pustaka/variables.tex}
-\input{pustaka/tanda-hubung.tex}
-
-% Menambahkan resource daftar pustaka
-\addbibresource{pustaka/pustaka.bib}
-
-% Pengaturan format potongan kode
 \usepackage{listings}
 \definecolor{comment}{RGB}{0,128,0}
 \definecolor{string}{RGB}{255,0,0}
@@ -154,7 +149,21 @@
   captionpos=b,
   % xleftmargin=5mm,
 }
+\lstdefinestyle{clistyle}{
+  basicstyle=\footnotesize\ttfamily,
+  numbers=none,
+  frame=single,
+  breaklines=true,
+  prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+  captionpos=b,
+}
 \lstset{style=codestyle}
+
+\input{pustaka/variables.tex}
+\input{pustaka/tanda-hubung.tex}
+
+% Menambahkan resource daftar pustaka
+\addbibresource{pustaka/pustaka.bib}
 
 % Isi keseluruhan dokumen
 \begin{document}
@@ -169,7 +178,6 @@
 % Sampul dalam Bahasa Indonesia
 \renewcommand\covercontents{sampul/konten-id.tex}
 \input{sampul/sampul-luar-tipis.tex}
-\clearpage
 \cleardoublepage
 
 % Sampul dalam Bahasa Inggris
@@ -202,31 +210,34 @@
 \input{abstrak/abstrak-en.tex}
 \cleardoublepage
 
+\input{lainnya/kata-pengantar.tex}
+\cleardoublepage
+
 % Daftar isi
 \renewcommand*\contentsname{DAFTAR ISI}
+\phantomsection
 \addcontentsline{toc}{chapter}{\contentsname}
 \tableofcontents
 \cleardoublepage
 
 % Daftar gambar
 \renewcommand*\listfigurename{DAFTAR GAMBAR}
+\phantomsection
 \addcontentsline{toc}{chapter}{\listfigurename}
 \listoffigures
 \cleardoublepage
 
 % Daftar tabel
 \renewcommand*\listtablename{DAFTAR TABEL}
+\phantomsection
 \addcontentsline{toc}{chapter}{\listtablename}
 \listoftables
 \cleardoublepage
 
 \renewcommand*\lstlistlistingname{DAFTAR KODE SUMBER}
+\phantomsection
 \addcontentsline{toc}{chapter}{\lstlistlistingname}
 \lstlistoflistings
-\cleardoublepage
-
-% Daftar singkatan
-\input{lainnya/daftar-singkatan.tex}
 \cleardoublepage
 
 % Nomor halaman isi dimulai dari sini
@@ -245,7 +256,7 @@
 \cleardoublepage
 
 % Bab 4 pengujian dan analisis
-\input{bab/4-pengujian-analisis.tex}
+\input{bab/4-hasil-pembahasan.tex}
 \cleardoublepage
 
 % Bab 5 penutup

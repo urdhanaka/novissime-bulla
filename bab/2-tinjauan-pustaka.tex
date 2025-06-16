@@ -1,8 +1,6 @@
 \chapter{TINJAUAN PUSTAKA}
 \label{chap:tinjauanpustaka}
 
-% Ubah bagian-bagian berikut dengan isi dari tinjauan pustaka
-
 Demi mendukung implementasi pada tugas akhir, penelitian atau perancangan terdahulu dan dasar teori
 yang berkaitan akan dijelaskan pada bab ini. Hasil kajian yang didapat
 dan dasar teori tersebut akan digunakan pada tugas akhir.
@@ -123,11 +121,7 @@ klaster Kubernetes dapat dilihat pada gambar \ref{fig:arsitektur-cluster-kuberne
 
 \begin{figure}[H]
   \centering
-
-  % Ubah dengan nama file gambar dan ukuran yang akan digunakan
   \includegraphics[scale=0.15]{gambar/kubernetes-cluster-architecture.png}
-
-  % Ubah dengan keterangan gambar yang diinginkan
   \caption{Arsitektur Klaster Kubernetes}
   \label{fig:arsitektur-cluster-kubernetes}
 \end{figure}
@@ -284,6 +278,27 @@ yang memiliki sumber daya terbatas seperti \emph{edge computing} dan \emph{Inter
 \emph{Binary} K3s berisi \emph{tools} dan \emph{packages} yang diperlukan untuk membuat
 klaster Kubernetes seperti Containerd dan runc sebagai CRI (\emph{Container Runtime Interface}),
 Flannel untuk CNI (\emph{Container Network Interface}), CoreDNS untuk Cluster DNS, dan lain-lain.
+
+\subsection{Helm}
+\label{chap:helm}
+
+Helm merupakan \emph{package manager} pada Kubernetes. Penggunaan Helm dapat mempermudah
+dalam pembagian \emph{package}, pengunduhan \emph{package}, serta manajemen \emph{package}
+yang diinstal di Kubernetes. Helm memiliki beberapa komponen utama yaitu Charts, Repository, dan
+Release.
+
+\begin{enumerate}
+  
+  \item Charts merupakan \emph{package} yang ada pada Helm. Charts berisi semua definisi
+    sumber daya yang dibutuhkan untuk menjalankan aplikasi atau Service pada klaster Kubernetes.
+
+  \item Repository adalah tempat Charts didapat dan dibagi.
+
+  \item Release adalah sebuah \emph{instance} dari Charts yang sedang berjalan di klaster
+    Kubernetes. Satu Chart dapat diinstal lebih dari satu di klaster Kubernetes yang sama.
+    Setiap kali Chart diinstal, Release yang baru akan dibuat.
+  
+\end{enumerate}
 
 \subsection{\emph{Container}}
 \label{sec:container}
@@ -499,11 +514,7 @@ dari hypervisor tipe 1 dan hypervisor tipe 2 dapat dilihat pada gambar \ref{fig:
 
 \begin{figure}[H]
   \centering
-
-  % Ubah dengan nama file gambar dan ukuran yang akan digunakan
   \includegraphics[scale=0.55]{gambar/Type-1-and-type-2-hypervisors.png}
-
-  % Ubah dengan keterangan gambar yang diinginkan
   \caption{Hypervisor Tipe 1 dan Tipe 2 \parencite{nfv}}
   \label{fig:arsitektur-hypervisor-1-2}
 \end{figure}
@@ -610,10 +621,10 @@ dapat dilihat pada gambar \ref{fig:linux-bridge}
   \label{fig:linux-bridge}
 \end{figure}
 
-Pada sistem operasi Linux, \emph{Virtual machine} yang dibuat dapat mengutilisasi Linux
+Pada sistem operasi Linux, \emph{virtual machine} yang dibuat dapat mengutilisasi Linux
 \emph{bridge} untuk tersambung dengan jaringan lokal yang sama dengan \emph{host}.
 Dengan begitu, alamat IP yang didapat oleh \emph{virtual machine} berada dalam jangkauan
-yang sama dengan alamat IP dari \emph{host}, sehingga \emph{virtual machine} tersebut
+yang sama dengan jangkauan dari alamat IP \emph{host}, sehingga \emph{virtual machine} tersebut
 terlihat sebagai satu mesin fisik tersendiri.
 
 \subsection{RPC}
