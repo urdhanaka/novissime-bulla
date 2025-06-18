@@ -220,9 +220,51 @@ yang terdiri dari satu \emph{control plane} dan sisanya sebagai \emph{worker nod
 Semua \emph{Virtual machine} tersebut tidak selalu berada di komputer \emph{worker}
 yang sama.
 
-\subsubsection{\emph{Virtual Machine} di }
+Pada subbab pengujian ini, akan dibuat sebuah klaster yang terdiri dari dua
+\emph{virtual machine} yang berada di dua komputer fisik yang berbeda. Pada gambar
+\ref{fig:nodes-2-komputer-berbeda}, klaster tersebut memiliki \emph{nodes} yang
+bernama eovugekt dan gxlshrqm. Komputer fisik dari dua \emph{virtual machine}
+tersebut dapat dilihat pada gambar \ref{fig:vm-komputer-fisik-1}.
 
-\subsubsection{\emph{Virtual Machine} di }
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.3]{gambar/two-nodes-difference-computer-dashboard.png}
+  \caption{Daftar \emph{Nodes} pada Klaster 1}
+  \label{fig:nodes-2-komputer-berbeda-1}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.3]{gambar/ssh-nodes-list-1.png}
+  \caption{Daftar \emph{Virtual Machine} Setelah Pembuatan Klaster 1}
+  \label{fig:vm-komputer-fisik-1}
+\end{figure}
+
+Gambar \ref{fig:vm-komputer-fisik-1} menunjukkan bahwa \emph{nodes} gxlshrqm berada
+pada komputer fisik rpl-1 dan \emph{nodes} eovugekt berada pada
+komputer fisik rpl-02. Untuk pengujian \emph{multi-tenancy}, akan
+dibuat klaster Kubernetes lagi dari dua komputer fisik tersebut.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.3]{gambar/two-nodes-difference-computer-dashboard-2.png}
+  \caption{Daftar \emph{Nodes} pada Klaster 2}
+  \label{fig:nodes-2-komputer-berbeda-2}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.3]{gambar/ssh-nodes-list-2.png}
+  \caption{Daftar \emph{Virtual Machine} Setelah Pembuatan Klaster 2}
+  \label{fig:vm-komputer-fisik-2}
+\end{figure}
+
+Pada gambar \ref{fig:nodes-2-komputer-berbeda-2}, klaster yang baru
+memiliki \emph{nodes} bernama qxwuyusc dan vsbftqms. Gambar \ref{fig:vm-komputer-fisik-2}
+menunjukkan bahwa \emph{node} qxwuyusc berada pada komputer fisik rpl-02 yang juga
+merupakan komputer fisik dari \emph{node} eovugekt. Dari hal tersebut, dapat
+dilihat bahwa komputer fisik rpl-02 digunakan oleh dua klaster dan dua pengguna
+yang berbeda.
 
 \subsection{\emph{Error Handling}}
 \label{subsec:error-handling}
