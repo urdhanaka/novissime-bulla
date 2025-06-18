@@ -60,14 +60,14 @@ untuk membuat klaster dengan \emph{virtual machine} pada \emph{worker}.
   \label{fig:server-worker-top-level}
 \end{figure}
 
-\section{Implementasi Sistem \emph{Provisioning}}
+\section{Pengembangan Sistem \emph{Provisioning}}
 \label{sec:implementasi-sistem-provisioning}
 
 Sistem \emph{provisioning} pada setiap komputer \emph{worker} secara fungsi dapat dipisah
 menjadi dua bagian besar, yaitu bagian server untuk menerimaa permintaan pembuatan klaster yang dikirim
 oleh server utama dan bagian pembuatan \emph{virtual machine}.
 
-\subsection{Implementasi Server}
+\subsection{Pengembangan Server}
 \label{sec:server}
 
 Komputer \emph{worker} menerima \emph{request} pembuatan klaster melalui jaringan internet.
@@ -166,7 +166,7 @@ gRPC server dapat dilihat pada kode sumber \ref{lst:rpc-server-start}.
   style=codestyle,
 ]{program/rpc-start-server.go}
 
-\subsection{Implementasi \emph{Provisioning}}
+\subsection{Pengembangan Sistem \emph{Provisioning}}
 \label{sec:provisioning}
 
 Setelah komputer menerima \emph{request} pembuatan klaster melalui RPC,
@@ -269,7 +269,7 @@ adalah enp1s0, dapat menggunakan \emph{command line} sebagai berikut:
 Setelah itu, komputer akan tetap tersambung dengan koneksi internet melalui
 \emph{network interface} enp1s0 dan Linux \emph{bridge} k3s-br0 juga aktif.
 Linux \emph{bridge} k3s-br0 akan digunakan pada saat membuat \emph{virtual machine}.
-\subsubsection{Implementasi Cloud-init}
+\subsubsection{Penggunaan Cloud-init}
 \label{sec:implementasi-cloud-init}
 
 Konfigurasi Cloud-init yang digunakan untuk \emph{virtual machine} yang bertugas sebagai \emph{control plane}
@@ -371,7 +371,7 @@ mengkonfigurasi beberapa hal pada \emph{worker node} seperti berikut:
 
 \end{enumerate}
 
-\subsubsection{Implementasi \emph{Queue} dan \emph{Worker}}
+\subsubsection{Penggunaan \emph{Queue} dan \emph{Worker}}
 \label{sec:implementasi-queue-dan-worker}
 
 Mekanisme \emph{queue} akan digunakan pada saat proses \emph{provisioning}
@@ -447,7 +447,7 @@ dari \emph{virtual machine}.
 %
 % Untuk menunjukkan proses dalam pembuatan \emph{virtual machine}
 
-\subsubsection{Implementasi QEMU dan Libvirt}
+\subsubsection{Penggunaan QEMU dan Libvirt}
 \label{sec:implementasi-libvirt}
 
 Libvirt menyediakan \emph{bindings} untuk banyak bahasa pemrograman

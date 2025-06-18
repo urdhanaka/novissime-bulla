@@ -153,7 +153,46 @@ Gambaran mengenai hal tersebut dapat dilihat pada \ref{cli:vnet-big}.
 VM's ethernet interface <-> vnet <-> Linux bridge <-> physical NIC
 \end{lstlisting}
 
+\subsection{Implementasi Cloud-init}
+\label{subsec:implementasi-cloud-init}
+
+Setiap \emph{virtual machine} yang dibuat memiliki sebuah \emph{file} berekstensi iso khusus
+yang berisikan \emph{file} konfigurasi Cloud-init. \emph{File} tersebut kemudian akan digunakan
+saat mendefinisikan konfigurasi xml dari \emph{virtual machine}. Contoh definisi konfigurasi
+xml tersebut dapat dilihat pada kode sumber \ref{lst:xml-cloud-init}.
+
+\lstinputlisting[
+  language=go,
+  style=codestyle,
+  emphstyle=\color{black}\bfseries\underbar,
+  emph={seedFile},
+  caption={Konfigurasi xml dengan \emph{File} Cloud-init},
+  label={lst:xml-cloud-init}
+]{program/xml-cloud-init-iso.go}
+
+Cloud-init yang berjalan pada \emph{virtual machine} menghasilkan \emph{file}
+\emph{log} dari proses konfigurasi Cloud-init. \emph{File} tersebut dapat digunakan
+untuk proses \emph{debug} konfigurasi yang digunakan. Cloud-init menghasilkan
+dua \emph{file logging}, yaitu \emph{log} dari proses Cloud-init itu sendiri
+dan \emph{log} dari \emph{command} yang dijalankan oleh Cloud-init. Hasil
+dari dua \emph{file} tersebut dapat dilihat pada gambar \ref{fig:log-cloud-init}
+dan gambar \ref{fig:log-output-cloud-init}.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[scale=0.3]{gambar/cloud-init.png}}
+  \caption{\emph{Log} Cloud-init}
+  \label{fig:log-cloud-init}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[scale=0.3]{gambar/cloud-init-output.png}}
+  \caption{\emph{Log Command} yang Dijalankan Cloud-init}
+  \label{fig:log-output-cloud-init}
+\end{figure}
 \subsection{Pengujian Pembuatan \emph{Virtual Cluster} Lingkungan Lokal}
+
 \label{subsec:pengujian-pembuatan-vc}
 
 Pengujian proses \emph{provisioning} pada komputer lokal bertujuan untuk
