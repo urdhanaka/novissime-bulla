@@ -1,25 +1,275 @@
 \chapter{HASIL DAN PEMBAHASAN}
 \label{chap:hasil-pembahasan}
 
+Pada bab ini akan dijelaskan mengenai hasil implementasi
+dan pengujian dari sistem \emph{provisioning} yang telah
+dibuat sebelumnya pada bab 3. Pengujian yang dilakukan
+menggunakan laptop penulis dan komputer dari laboratorium Rekayasa Perangkat
+Lunak Teknik Informatika ITS. Spesifikasi dari laptop dan komputer
+yang digunakan dapat dilihat pada tabel \ref{tb:spesifikasi-laptop-pengujian} dan
+\ref{tb:spesifikasi-komputer-pengujian}
+
+\begin{longtable}{|c|c|}
+  \caption{Spesifikasi Laptop untuk Pengujian}
+  \label{tb:spesifikasi-laptop-pengujian} \\
+  \hline
+  OS     & Fedora Linux 42.20250614.0 (Kinoite) x86\_64 \\
+  \hline
+  Kernel & Linux 6.14.9-300.fc42.x86\_64                \\
+  \hline
+  CPU    & Intel(R) Core(TM) i7-10750H (12) @ 5.00 GHz       \\
+  \hline
+  Integrated GPU   & Intel UHD Graphics @ 1.15 GHz [Integrated]       \\
+  \hline
+  Discrete GPU    & NVIDIA GeForce GTX 1650 Ti Mobile [Discrete]       \\
+  \hline
+  RAM    & 15848MiB       \\
+  \hline
+\end{longtable}
+
+\begin{longtable}{|c|c|}
+  \caption{Spesifikasi Komputer untuk Pengujian}
+  \label{tb:spesifikasi-komputer-pengujian} \\
+  \hline
+  OS     & Ubuntu 24.04.2 LTS x86\_64 \\
+  \hline
+  Kernel & 6.11.0-26-generic          \\
+  \hline
+  CPU    & 12th Gen Intel i7-12700 (20) @ 4.800GHz       \\
+  \hline
+  GPU    & Intel AlderLake-S GT1       \\
+  \hline
+  RAM    & 31834MiB       \\
+  \hline
+\end{longtable}
+
 \section{Hasil Implementasi}
 \label{sec:hasil-implementasi}
 
-\section{Pembahasan}
-\label{sec:pembahasan}
+\subsection{Implementasi Linux Bridge}
+\label{subsec:implementasi-linux-bridge}
 
-Dari pengujian yang
+Linux \emph{bridge} yang telah dijelaskan sebelumnya dibuat
+agar \emph{virtual machine} memiliki jangkauan alamat IP yang sama
+dengan jangkauan alamat IP dari komputer \emph{host}. Jangkauan IP yang
+sama dengan komputer \emph{host} diperlukan agar \emph{virtual machine}
+yang berada di komputer A dapat berkomunikasi dengan \emph{virtual machine}
+yang berada di komputer B.
+
+\begin{lstlisting}[
+  style=clistyle,
+  caption={Informasi \emph{Network Interface} pada Komputer \emph{Host}},
+  label={cli:host-network-interface}
+]
+...
+2: enp4s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq master k3s-br0 state UP group default qlen 1000
+    link/ether c8:7f:54:6c:47:ff brd ff:ff:ff:ff:ff:ff
+...
+8: k3s-br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 92:e9:0d:63:4e:32 brd ff:ff:ff:ff:ff:ff
+    inet 10.21.73.107/24 brd 10.21.73.255 scope global dynamic noprefixroute k3s-br0
+       valid_lft 94877sec preferred_lft 94877sec
+    inet6 fe80::1d88:4787:24c3:2a99/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+\end{lstlisting}
+
+Pada kode sumber \ref{cli:host-network-interface}, komputer \emph{host} memiliki
+\emph{network interface} untuk ethernet bernama enp4s0. Linux \emph{bridge} yang
+dibuat untuk implementasi tugas akhir ini adalah k3s-br0 dan enp4s0 menjadi
+\emph{slave} dari Linux \emph{bridge} k3s-br0. Alamat IP dan jangkauan IP dari
+komputer \emph{host} tersebut adalah 10.21.73.17 dengan \emph{subnet mask} /24
+yang berarti dalam \emph{local area network} tersebut terdapat 255 alamat
+IP yang dapat dibagikan oleh DHCP server.
+
+Agar \emph{virtual machine} memiliki jangkauan alamat IP yang sama dengan 
+jangkauan alamat IP address yang didapat oleh komputer \emph{host}, \emph{virtual machine}
+dapat menggunakan Linux \emph{bridge} yang sudah dibuat sebagai sumber jaringan
+yang dipakai. Konfigurasi tersebut dapat dilakukan melalui konfigurasi berbentuk
+xml seperti yang dapat dilihat pada kode sumber \ref{code:vm-interface-configuration}.
+Alamat IP yang didapat pada \emph{virtual machine} dapat dilihat pada kode
+sumber \ref{cli:vm-network-interface}.
+
+\begin{lstlisting}[
+  language=xml,
+  style=codestyle,
+  caption={Konfigurasi \emph{Interface} Jaringan pada \emph{Virtual Machine}},
+  label={code:vm-interface-configuration}
+]
+...
+<interface type='bridge'>
+  <mac address='52:54:00:cf:ee:9e'/>
+  <source bridge='k3s-br0'/>
+  <model type='virtio'/>
+  <alias name='net0'/>
+  <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
+</interface>
+...
+\end{lstlisting}
+
+\begin{lstlisting}[
+  style=clistyle,
+  caption={Informasi \emph{Network Interface} pada \emph{Virtual Machine}},
+  label={cli:vm-network-interface}
+]
+...
+2: enp1s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:cf:ee:9e brd ff:ff:ff:ff:ff:ff
+    inet 10.21.73.134/24 brd 10.21.73.255 scope global dynamic noprefixroute enp1s0
+       valid_lft 105859sec preferred_lft 105859sec
+    inet6 fe80::5054:ff:fecf:ee9e/64 scope link proto kernel_ll
+       valid_lft forever preferred_lft forever
+...
+\end{lstlisting}
+
+Pada kode sumber \ref{cli:vm-network-interface}, alamat IP yang didapat oleh
+\emph{virtual machine} adalah 10.21.73.134 dan memiliki \emph{subnet mask} /24.
+Alamat IP dan \emph{subnet mask} yang didapat oleh \emph{virtual machine} sama
+dengan alamat IP dan \emph{subnet mask} yang didapat oleh komputer \emph{host}.
+Informasi lanjutan mengenai Linux \emph{bridge} dan \emph{network interfaces}
+yang tersambung dapat dilihat pada kode sumber \ref{cli:bridge-interfaces}.
+
+\begin{lstlisting}[
+  style=clistyle,
+  caption={Linux \emph{Bridge} dan \emph{Network Interfaces} yang Tersambung},
+  label={cli:bridge-interfaces}
+]
+bridge name     bridge id               STP enabled     interfaces
+k3s-br0         8000.92e90d634e32       yes             enp4s0
+                                                        vnet7
+\end{lstlisting}
+
+Pada kode sumber \ref{cli:bridge-interfaces}, \emph{network interfaces} yang
+berada di bawah Linux \emph{bridge} k3s-br0 adalah \emph{network interface}
+enp4s0 dan vnet7. \emph{Network interface} enp4s0 merupakan \emph{network interface}
+untuk ethernet sedangkan vnet7 merupakan \emph{virtual network} yang dibuat
+dan tersambung dengan \emph{network interface} dari \emph{virtual machine}.
+Gambaran mengenai hal tersebut dapat dilihat pada \ref{cli:vnet-big}.
+
+\begin{lstlisting}[
+  style=clistyle,
+  caption={Hubungan Antar \emph{Devices}},
+  label={cli:vnet-big}
+]
+VM's ethernet interface <-> vnet <-> Linux bridge <-> physical NIC
+\end{lstlisting}
+
+\subsection{Pengujian Pembuatan \emph{Virtual Cluster} Lingkungan Lokal}
+\label{subsec:pengujian-pembuatan-vc}
+
+Pengujian proses \emph{provisioning} pada komputer lokal bertujuan untuk
+menguji apakah sistem yang telah dibangun dapat membuat \emph{virtual cluster}
+yang sesuai dengan kriteria \emph{user}. Pengujian pada lingkungan lokal ini
+tidak memerlukan Linux \emph{bridge} karena jaringan internet yang digunakan
+oleh \emph{virtual machine} akan menggunakan \emph{Network Address Translation} (NAT)
+dari \emph{host}, sehingga setiap \emph{virtual machine} dapat berkomunikasi satu sama
+lain tanpa menggunakan Linux \emph{bridge}.
+
+Skenario pengujian yang akan dilakukan pada lingkungan lokal adalah
+membuat klaster Kubernetes dengan satu \emph{virtual machine} dan dua \emph{virtual machine}.
+Pada klaster Kubernetes yang terdiri satu \emph{virtual machine}, \emph{virtual machine}
+tersebut bertugas sebagai \emph{control plane}. Sedangkan pada klaster Kubernetes yang terdiri
+dari dua \emph{virtual machine}, satu dari \emph{virtual machine} tersebut bertugas sebagai
+\emph{control plane} dan sisanya sebagai \emph{worker node}.
+
+Setelah pembuatan klaster selesai, \emph{dashboard} akan menampilkan
+token untuk dapat mengakses \emph{dashboard} Kubernetes dari klaster
+yang dibuat. Selain itu, tombol untuk mengakses klaster juga akan ditampilkan
+dan dapat ditekan oleh \emph{user} untuk menuju situs web \emph{dashboard}
+klaster Kubernetes.
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[scale=0.3]{gambar/website-create-process.png}}
+  \caption{Proses Pembuatan Klaster}
+  \label{fig:proses-pembuatan-klaster}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \fbox{\includegraphics[scale=0.3]{gambar/website-create-process-done-local.png}}
+  \caption{Proses Pembuatan Klaster Selesai}
+  \label{fig:proses-pembuatan-klaster-selesai}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.3]{gambar/worker-create-cluster-process-local.png}
+  \caption{\emph{Log} pada Komputer \emph{Worker}}
+  \label{fig:worker-create-cluster-process-local}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.3]{gambar/kubernetes-dashboard-access-local-with-nodes.png}
+  \caption{Daftar \emph{Nodes} pada Klaster dengan Satu \emph{Virtual Machine}}
+  \label{fig:daftar-nodes-pada-dashboard-kubernetes}
+\end{figure}
+
+Berdasarkan gambar-gambar di atas, sistem \emph{provisioning} dapat membuat
+\emph{virtual machine} yang secara otomatis tergabung dalam sebuah klaster Kubernetes.
+Selain itu, \emph{control plane} juga menyediakan \emph{dashboard} Kubernetes yang dapat
+digunakan oleh pengguna untuk berinteraksi dengan klaster Kubernetes tersebut.
+
+\subsection{Pengujian Pembuatan \emph{Virtual Cluster} Lingkungan \emph{Production}}
+\label{subsec:pengujian-pembuatan-vc-prod}
+
+Pada lingkungan \emph{production}, \emph{virtual machine} yang tergabung dalam
+satu klaster tidak selalu berada dalam satu komputer fisik \emph{worker} yang sama.
+Pengujian dilakukan dengan cara membuat klaster berisi dua atau lebih \emph{virtual machine}
+yang terdiri dari satu \emph{control plane} dan sisanya sebagai \emph{worker node}.
+Semua \emph{Virtual machine} tersebut tidak selalu berada di komputer \emph{worker}
+yang sama.
+
+\subsubsection{\emph{Virtual Machine} di }
+
+\subsubsection{\emph{Virtual Machine} di }
+
+\subsection{\emph{Error Handling}}
+\label{subsec:error-handling}
+
+Proses \emph{provisioning virtual machine} untuk pembuatan
+klaster Kubernetes tidak selalu berjalan baik. Terdapat banyak
+faktor yang dapat membuat proses \emph{provisioning} gagal. Untuk
+mengatasi hal tersebut, proses \emph{provisioning} pada implementasi
+tugas akhir ini memiliki sifat atomik, yaitu jika terjadi \emph{error}
+saat membuat \emph{virtual machine} dan \emph{virtual machine} sudah terbuat,
+\emph{virtual machine} tersebut akan dihapus.
+
+\lstinputlisting[
+  language=go,
+  style=codestyle,
+  caption={Kode Sumber Penghapusan \emph{Virtual Machine}},
+  label={lst:vm-delete-function}
+]{program/delete-vm.go}
+
+\lstinputlisting[
+  language=go,
+  style=codestyle,
+  emphstyle=\color{black}\bfseries\underbar,
+  emph={deleteInstance},
+  caption={Contoh Penggunaan \emph{Error Handling}},
+  label={lst:error-handling-example}
+]{program/error-handling.go}
+
+Pada kode sumber \ref{lst:vm-delete-function}, fungsi \lstinline{deleteInstance}
+akan mematikan \emph{virtual machine} dan menghapus \emph{file} yang berkaitan
+dengan \emph{virtual machine} tersebut seperti \emph{cloud image} yang dipakai.
+Bentuk implementasi dari \emph{error handling} tersebut dapat dilihat pada kode
+sumber \ref{lst:error-handling-example}. Pada kode sumber tersebut, jika terjadi
+\emph{error} pada saat membuat \emph{virtual machine}, maka \emph{virtual machine}
+tersebut akan dihapus beserta semua \emph{file} yang berkaitan.
 
 % Contoh pembuatan tabel
-\begin{longtable}{|c|c|c|}
-  \caption{Hasil Pengukuran Energi dan Kecepatan}
-  \label{tb:EnergiKecepatan}                                   \\
-  \hline
-  \rowcolor[HTML]{C0C0C0}
-  \textbf{Energi} & \textbf{Jarak Tempuh} & \textbf{Kecepatan} \\
-  \hline
-  10 J            & 1000 M                & 200 M/s            \\
-  20 J            & 2000 M                & 400 M/s            \\
-  30 J            & 4000 M                & 800 M/s            \\
-  40 J            & 8000 M                & 1600 M/s           \\
-  \hline
-\end{longtable}
+% \begin{longtable}{|c|c|c|}
+%   \caption{Hasil Pengukuran Energi dan Kecepatan}
+%   \label{tb:EnergiKecepatan}                                   \\
+%   \hline
+%   \rowcolor[HTML]{C0C0C0}
+%   \textbf{Energi} & \textbf{Jarak Tempuh} & \textbf{Kecepatan} \\
+%   \hline
+%   10 J            & 1000 M                & 200 M/s            \\
+%   20 J            & 2000 M                & 400 M/s            \\
+%   30 J            & 4000 M                & 800 M/s            \\
+%   40 J            & 8000 M                & 1600 M/s           \\
+%   \hline
+% \end{longtable}

@@ -1,4 +1,4 @@
-func (c *LibvirtVirtualization) createInstance(
+func (c *LibvirtVirtualization) createMaster(
     ctx context.Context,
     virtRequest *virtualization_model.CreateInstanceRequest,
 ) (*virtualization_model.VirtCreateInstanceResponse, error) {

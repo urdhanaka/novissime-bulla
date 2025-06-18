@@ -1,32 +1,54 @@
 \chapter{KESIMPULAN DAN SARAN}
 \label{chap:penutup}
 
+Pada bab ini akan dipaparkan kesimpulan dari hasil implementasi
+yang sudah dilakukan. Selain itu, saran mengenai hal yang dapat
+dilakukan untuk mengembangkan implementasi ini juga akan dipaparkan.
+
 \section{Kesimpulan}
 \label{sec:kesimpulan}
 
-Berdasarkan hasil pengujian yang \lipsum[1][1-3] sebagai berikut:
+Berdasarkan hasil implementasi yang dilakukan, berikut adalah
+kesimpulan yang dapat diambil berdasarkan permasalahan yang diangkat
+pada tugas akhir ini:
 
 \begin{enumerate}[nolistsep]
 
-  \item Pembuatan \lipsum[2][1-3]
+  \item Pembuatan sistem \emph{provisioning} untuk menerapkan \emph{multi-tenancy}
+    dalam klaster Kubernetes dapat dilakukan dengan cara mengaplikasikan \emph{tools}
+    untuk membuat \emph{virtual machine} seperti Libvirt, Cloud-init, dan \emph{cloud images}.
 
-  \item \lipsum[2][4-6]
+  \item Penerapan \emph{multi-tenancy} pada implementasi ini adalah
+    komputer fisik yang digunakan sebagai tempat \emph{provisioning} dapat
+    membuat lebih dari satu \emph{virtual machine} yang tergabung dalam
+    klaster yang berbeda. Implementasi tersebut menyebabkan komputer
+    fisik tersebut melayani lebih dari satu \emph{user} sehingga
+    komputer fisik tersebut memenuhi kriteria \emph{multi-tenancy}.
 
-  \item \lipsum[2][7-10]
+  \item Pembuatan \emph{virtual machine} yang secara otomatis tergabung
+    dalam sebuah klaster Kubernetes dapat dicapai melalui beberapa \emph{tools}
+    seperti K3s, Libvirt dan Cloud-init. K3s digunakan sebagai distribusi
+    Kubernetes yang berukuran lebih kecil untuk membuat klaster Kubernetes,
+    Libvirt digunakan untuk berinteraksi dengan hypervisor agar dapat membuat 
+    \emph{virtual machine} dan Cloud-init digunakan untuk mengotomatisasi proses
+    pembuatan dan penggabungan klaster Kubernetes.
 
 \end{enumerate}
 
 \section{Saran}
 \label{chap:saran}
 
-Untuk pengembangan lebih lanjut pada \lipsum[1][1-3] antara lain:
+Untuk pengembangan lebih lanjut pada sistem \emph{provisioning}
+untuk membuat klaster Kubernetes adalah sebagai berikut:
 
 \begin{enumerate}[nolistsep]
 
-  \item Memperbaiki \lipsum[2][1-3]
+  \item Meningkatkan kualitas dari antarmuka pengguna dan pengalaman
+    pengguna pada situs web \emph{dashboard} sebagai antarmuka
+    yang digunakan oleh \emph{user} untuk membuat klaster.
 
-  \item \lipsum[2][4-6]
-
-  \item \lipsum[2][7-10]
+  \item Meningkatkan keamanan dengan cara mengisolasi \emph{virtual machine}
+    agar tidak dapat diakses oleh \emph{virtual machine} lain yang tidak
+    dalam satu klaster.
 
 \end{enumerate}
