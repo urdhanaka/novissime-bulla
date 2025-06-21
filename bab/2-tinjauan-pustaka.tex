@@ -103,8 +103,6 @@ hal tersebut, Kubernetes menyediakan beberapa fitur seperti berikut:
     membuat sebuah \emph{resource} baru menggunakan \emph{Custom Resources} tersebut. \emph{Resource}
     tersebut dapat berupa API khusus.
 
-    \clearpage
-    
 \end{enumerate}
 
 \subsubsection{Arsitektur Kubernetes}
@@ -137,7 +135,7 @@ mengenai K3s akan dijelaskan pada bab \ref{chap:K3s}.
 
 \subsubsection{Kubernetes Control Plane}
 
-Pada klaster Kubernetes, server yang menjadi \emph{control plane} bertugas
+Pada klaster Kubernetes, cluster yang menjadi \emph{control plane} bertugas
 untuk melakukan \emph{health checking} serta membuat keputusan global seperti \emph{scheduling}
 serta mendeteksi dan merespon \emph{event} yang terjadi pada klaster tersebut. Untuk melakukan
 tugas tersebut, \emph{control plane} memiliki komponen kube-apiserver,
@@ -471,7 +469,7 @@ Redis akan digunakan sebagai basis data antrian \emph{queue} dalam proses \emph{
 \emph{virtual machine}. Antrian tersebut digunakan untuk menghindari konflik dalam proses \emph{provisioning}
 lebih dari satu \emph{virtual machine} dalam waktu yang bersamaan.
 
-\subsection{\emph{Multi-tenancy}}
+\subsection{\emph{Multi-Tenancy}}
 \label{sec:multi-tenancy}
 
 \emph{Multi-tenancy} secara bahasa memiliki arti banyak pengguna atau \emph{tenant}. Dalam konteks
@@ -493,6 +491,20 @@ pengguna yang berbeda berada pada satu mesin fisik yang sama. Dalam proses \emph
 sebuah mesin fisik sudah memiliki \emph{virtual machine} dari pengguna pertama dan
 masih memiliki cukup \emph{resource} untuk melayani pengguna lainnya, mesin tersebut
 akan membuat \emph{virtual machine} baru untuk pengguna baru tersebut.
+
+\subsection{\emph{Virtual Cluster}}
+\label{sec:virtual-cluster}
+
+\emph{Virtual cluster} adalah sebuah klaster yang terdiri dari
+\emph{virtual machine}. \emph{Virtual cluster} tersebut dapat dibuat
+secara dinamis yang berarti ukuran dari setiap klaster ditentukan
+oleh pengguna dari klaster tersebut dan dapat diciptakan secara
+\emph{on-demand} \parencite{6133210}. \emph{Virtual cluster}
+tersebut dapat digunakan untuk menjalankan sebuah \emph{job}
+dan jika \emph{job} tersebut sudah selesai, klaster tersebut
+dihancurkan dan sumber daya yang sebelumnya digunakan oleh
+\emph{virtual cluster} tersebut akan dikembalikan dan dapat
+digunakan untuk menciptakan \emph{virtual cluster} yang baru.
 
 \subsection{\emph{Virtual Machine}}
 \label{sec:virtual-machine}
@@ -540,7 +552,7 @@ Hypervisor memiliki beberapa fitur untuk mengelola \emph{virtual machine}, yaitu
   \item Pengembalian kondisi \emph{virtual machine}. Setiap \emph{virtual machine} menggunakan
     sumber daya fisik dalam bentuk \emph{virtual disk}. \emph{Virtual disk} ini disimpan
     dalam bentuk \emph{file}. \emph{Virtual machine} menyimpan \emph{snapshot} dari \emph{virtual disk}
-    dari waktu ke waktu atau setiap ada perubahan dalam \emph{virtual disk} tersebut. Ketika \emph{virtual machine}
+    dari waktu ke waktu atau setiap terjadi perubahan dalam \emph{virtual disk} tersebut. Ketika \emph{virtual machine}
     mengalami kendala atau masalah, \emph{virtual machine} dapat dikembalikan ke kondisi \emph{virtual disk}
     yang masih berfungsi sebelumnya.
 

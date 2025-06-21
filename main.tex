@@ -26,7 +26,6 @@
 % Pengaturan kutipan artikel
 \usepackage[style=apa, backend=biber]{biblatex}
 
-% Pengaturan format potongan kode
 \usepackage[titles]{tocloft}
 \setlength{\cftsecindent}{1em}
 \setlength{\cftsubsecindent}{2em}
@@ -157,7 +156,17 @@
   prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
   captionpos=b,
 }
-\lstset{style=codestyle}
+\lstset{
+  aboveskip=15pt,
+  style=codestyle
+}
+
+% lstlistoflistings configuration
+\makeatletter
+\renewcommand{\l@lstlisting}[2]{
+  \@dottedtocline{1}{0em}{2.3em}{#1}{#2}%
+}
+\makeatother
 
 \input{pustaka/variables.tex}
 \input{pustaka/tanda-hubung.tex}
@@ -176,7 +185,7 @@
 \setcounter{page}{1}
 
 % Sampul dalam Bahasa Indonesia
-\renewcommand\covercontents{sampul/konten-id.tex}
+\renewcommand\covercontents{sampul/konten-id-dalam.tex}
 \input{sampul/sampul-luar-tipis.tex}
 \cleardoublepage
 
@@ -224,6 +233,7 @@
 \renewcommand*\listfigurename{DAFTAR GAMBAR}
 \phantomsection
 \addcontentsline{toc}{chapter}{\listfigurename}
+\renewcommand{\addvspace}[1]{}%
 \listoffigures
 \cleardoublepage
 

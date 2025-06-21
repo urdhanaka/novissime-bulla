@@ -76,8 +76,8 @@ untuk menerima \emph{request} dari server utama. Implementasi tugas akhir ini me
 RPC dengan gRPC untuk menerima \emph{request} tersebut.
 
 \begin{lstlisting}[
-  caption={Definisi Prosedur RPC pada Komputer \emph{Worker}},
-  label={lst:rpc-procedure}
+  caption={Definisi Prosedur RPC pada Komputer \emph{Worker} Bagian 1},
+  label={lst:rpc-procedure-1}
 ]
 syntax = "proto3";
 
@@ -86,6 +86,12 @@ option go_package = "./services/model/proto-model";
 enum Status {
   STATUS_UNSPECIFIED = 0;
   STATUS_AVAILABLE = 1;
+\end{lstlisting}
+
+\begin{lstlisting}[
+  caption={Definisi Prosedur RPC pada Komputer \emph{Worker} Bagian 2},
+  label={lst:rpc-procedure-2}
+]
   STATUS_UNAVAILABLE = 2;
 }
 
@@ -122,7 +128,7 @@ service NodeService {
 }
 \end{lstlisting}
 
-Kode sumber \ref{lst:rpc-procedure} menunjukkan fungsi atau prosedur
+Kode sumber \ref{lst:rpc-procedure-1} dan \ref{lst:rpc-procedure-2} menunjukkan fungsi atau prosedur
 yang disediakan oleh \emph{worker} menggunakan protokol RPC. Untuk membuat prosedur
 di gRPC, format yang dipakai adalah format Protobuf. Protobuf merupakan format
 yang digunakan oleh gRPC sebagai \emph{Interface Definition Language}.
@@ -138,18 +144,22 @@ hasil konversi dari prosedur dari Protobuf dan membuat isi dari
 prosedur yang sudah ditetapkan. Server utama juga menerima hasil konversi
 dan akan menggunakannya untuk menjalankan fungsi atau prosedur tersebut di komputer
 \emph{worker}. Isi dari prosedur yang akan dijalankan di komputer \emph{worker} terdapat
-pada kode sumber \ref{lst:isi-prosedur}. Isi prosedur tersebut adalah \emph{logic}
+pada kode sumber \ref{lst:isi-prosedur-1} dan kode sumber \ref{lst:isi-prosedur-1}. Isi prosedur tersebut adalah \emph{logic}
 untuk membuat \emph{virtual machine} yang berjenis \emph{master node} atau \emph{worker node}.
 Perbedaan dari keduanya adalah \emph{master node} akan bertugas menjadi \emph{control plane}
 dari klaster Kubernetes yang dibuat nantinya.
 
-\clearpage
+\lstinputlisting[
+  language=Go,
+  caption={Prosedur Pembuatan \emph{Control Plane} pada Komputer \emph{Worker} Bagian 1},
+  label={lst:isi-prosedur-1}
+]{program/rpc-procedure-logic-master.go}
 
 \lstinputlisting[
   language=Go,
-  caption={Isi Prosedur pada Komputer \emph{Worker}},
-  label={lst:isi-prosedur}
-]{program/rpc-procedure-logic.go}
+  caption={Prosedur Pembuatan \emph{Control Plane} pada Komputer \emph{Worker} Bagian 2},
+  label={lst:isi-prosedur-2}
+]{program/rpc-procedure-logic-worker.go}
 
 Komputer \emph{worker} perlu mendengarkan \emph{request} pembuatan melalui
 protokol gRPC yang sudah ditetapkan sebelumnya. \emph{Library} gRPC pada Golang

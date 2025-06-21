@@ -4,39 +4,39 @@
 \section{Latar Belakang}
 \label{sec:latarbelakang}
 
-Pesatnya perkembangan teknologi dalam bidang komputer
-seperti komputasi awan memudahkan penggunaan sumber daya
-komputasi secara dinamis. Teknologi komputasi awan memungkinkan
-pengguna untuk menggunakan sumber daya komputasi sesuai dengan spesifikasi
-yang dibutuhkan tanpa perlu memiliki sumber daya komputasi tersebut secara
-fisik. Salah satu bentuk implementasi komputasi awan adalah
-Google Cloud Platform (GCP).
+Organisasi menggunakan banyak \emph{tools} untuk mencapai
+tujuannya. Salah satu \emph{tools} tersebut adalah sumber daya
+komputasi berupa komputer yang tersebar dalam organisasi tersebut. Komputer-komputer
+tersebut dapat digunakan untuk mencapai tujuan dari organisasi seperti 
+melakukan komputasi data yang dimiliki oleh organisasi, pembuatan
+surat pada organisasi, dan lain-lain.
 
-GCP menyediakan banyak layanan komputasi awan seperti Compute Engine yang merupakan
-layanan \emph{virtual machine} yang berjalan di mesin Google dan Google Kubernetes Engine (GKE)
-yang merupakan layanan Kubernetes. Semua layanan tersebut merupakan bentuk implementasi
-komputasi awan karena pengguna tidak perlu memiliki sumber daya tersebut secara
-fisik namun menggunakan sumber daya komputasi yang ditawarkan oleh penyedia jasa seperti GCP.
+Komputer-komputer organisasi tersebut berada pada posisi
+\emph{idle} atau tidak terpakai pada jam di luar kerja, namun
+komputer-komputer tersebut ada yang berada pada posisi \emph{idle}
+dan tidak pada saat jam kerja. Sumber daya komputasi yang berada
+pada posisi tidak terpakai tersebut merupakan pemborosan sumber
+daya karena komputer tersebut tidak melakukan proses komputasi apapun.
 
-Teknologi komputasi awan sangat bermanfaat pada banyak studi kasus. Salah satunya adalah pengguna
-dapat memiliki sumber daya komputasi tambahan kapan saja. Ketika pengguna ingin melakukan komputasi
-yang harus dilakukan oleh sumber daya komputasi yang besar dan pengguna tersebut tidak memiliki
-sumber daya komputasi tersebut secara fisik, pengguna tersebut dapat menyewa sumber daya komputasi
-tambahan dari penyedia jasa sumber daya komputasi. Setelah proses komputasi tersebut selesai, pengguna
-dapat mengembalikan sumber daya komputasi tersebut.
+Untuk menghindari pemborosan tersebut, diperlukan sebuah cara untuk
+memanfaatkan komputer yang berada pada kondisi \emph{idle}. Salah satu
+cara yang dapat digunakan adalah menggunakan mekanisme \emph{provisioning}
+agar komputer yang berada pada kondisi \emph{idle} dapat dipakai oleh
+pengguna. Namun, komputer tersebut dapat saja digunakan oleh pengguna lainnya.
 
-Di Teknik Informatika ITS, terdapat banyak komputer di lab yang bisa digunakan oleh mahasiswa saat
-pembelajaran berlangsung. Komputer-komputer tersebut biasa digunakan pada saat terjadi proses pembelajaran
-namun mati saat tidak terjadi proses pembelajaran. Untuk meningkatkan utilisasi dari komputer-komputer tersebut,
-sistem \emph{provisioning} akan dikembangkan yang nantinya akan menggunakan komputer-komputer tersebut sebagai
-\emph{worker} untuk klaster Kubernetes. Dengan begitu, komputer-komputer tersebut akan terutilisasi
-meskipun kegiatan pembelajaran sedang tidak berlangsung. Selain itu, klaster yang dibuat
-dapat digunakan sebagai tambahan sumber daya komputasi dalam melakukan komputasi yang berat.
+Salah satu \emph{tools} yang dipakai untuk proses \emph{provisioning} adalah
+Kubernetes. Kubernetes merupakan sebuah platform sumber terbuka untuk mengatur
+layanan dan beban kerja yang dikemas (\emph{containerized}). Kubernetes akan
+membentuk sebuah klaster yang terdiri dari satu atau lebih \emph{nodes} atau
+komputer yang saling bekerja sama dalam menjalankan layanan atau beban kerja
+yang diberikan kepada klaster tersebut. Penggunaan Kubernetes pada skala besar
+membutuhkan sumber daya yang pasti.
 
-Pada tugas akhir ini, akan dikembangkan sebuah sistem \emph{provisioning} untuk virtual machine
-secara dinamis yang terletak di komputer Teknik Informatika ITS. \emph{Virtual machines} atau VM
-yang dibuat akan secara otomatis tergabung dalam sebuah klaster Kubernetes yang nantinya
-dapat digunakan oleh pengguna.
+Pada tugas akhir ini, akan dikembangkan sebuah sistem \emph{provisioning} untuk \emph{virtual cluster}.
+\emph{Virtual cluster} adalah pendekatan yang memungkinkan sumber daya komputasi tersebut disediakan
+secara \emph{on-demand} dan tidak menggunakan komputer atau \emph{node} fisik yang sama. \emph{Multi-tenancy}
+akan diterapkan agar komputer yang digunakan untuk \emph{provisioning virtual cluster} dapat digunakan
+oleh banyak pengguna.
 
 \section{Rumusan Permasalahan}
 \label{sec:rumusanpermasalahan}
@@ -44,15 +44,15 @@ dapat digunakan oleh pengguna.
 Dari latar belakang tersebut maka dapat dijabarkan permasalahan sebagai berikut:
 
 \begin{enumerate}[nolistsep]
-
-  \item Bagaimana cara merancang sistem \emph{provisioning} VM yang dapat diimplementasikan
-    di lingkungan Teknik Informatika ITS?
+  
+  \item Bagaimana membentuk \emph{virtual cluster} Kubernetes dengan melakukan
+    \emph{resource allocation} di atas \emph{resource} komputasi yang dinamis?
 
   \item Bagaimana cara mengimplementasikan \emph{multi-tenancy} pada proses \emph{provisioning}
-    klaster Kubernetes?
+    \emph{virtual cluster} Kubernetes?
 
-  \item Bagaimana cara untuk membuat \emph{virtual machine} yang tergabung
-    dalam sebuah klaster secara dinamis?
+  \item Bagaimana cara untuk mengevaluasi mekanisme \emph{provisioning virtual cluster}
+    Kubernetes?
 
 \end{enumerate}
 
@@ -62,9 +62,6 @@ Dari latar belakang tersebut maka dapat dijabarkan permasalahan sebagai berikut:
 Batasan-batasan dari penelitian atau implementasi adalah sebagai berikut:
 
 \begin{enumerate}[nolistsep]
-
-  \item \emph{Provisioning} dilakukan di lingkungan Teknik Informatika Institut
-    Teknologi Sepuluh Nopember
 
   \item Hasil implementasi berupa aplikasi \emph{provisioning} yang terdapat di setiap
     komputer yang akan digunakan dan aplikasi web sebagai \emph{dashboard}
@@ -77,21 +74,22 @@ Batasan-batasan dari penelitian atau implementasi adalah sebagai berikut:
 
   \item Aplikasi \emph{provisioning} menggunakan libvirt dan libvirtd dengan versi 11.0.0
 
-  \item Evaluasi dari sistem yang dibuat adalah 
-
 \end{enumerate}
 
 \section{Tujuan}
 \label{sec:Tujuan}
 
 Tujuan dari implementasi ini adalah untuk mengembangkan sistem \emph{provisioning}
-yang dapat membuat VM dan secara otomatis tergabung ke dalam sebuah klaster Kubernetes secara dinamis sesuai dengan kriteria
+yang dapat membuat VM dan secara otomatis tergabung ke dalam sebuah \emph{virtual cluster}
+Kubernetes secara dinamis sesuai dengan kriteria
 \emph{resource} permintaan pengguna.
 
 \section{Manfaat}
 \label{sec:sistematikapenulisan}
 
 Manfaat dari implementasi ini adalah untuk menyediakan sebuah sistem penyewaan
-sumber daya komputasi yang berada di Teknik Informatika Institut Teknologi Sepuluh
-Nopember. Diharapkan sistem penyewaan ini dapat digunakan sebagai sumber daya komputasi
-tambahan yang dapat digunakan untuk proses komputasi yang berat.
+sumber daya komputasi dalam bentuk \emph{virtual cluster} yang dapat
+diciptakan sewaktu-waktu dengan sumber daya yang sesuai dengan keinginan pengguna.
+Diharapkan sistem penyewaan ini dapat digunakan sebagai sumber daya komputasi
+tambahan yang dapat digunakan untuk proses komputasi dan untuk
+meningkatkan utilisasi dari sumber daya komputasi yang dimiliki.
