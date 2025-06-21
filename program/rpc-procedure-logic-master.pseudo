@@ -1,3 +1,14 @@
+PSEUDOCODE_pembuatan master node
+
+func CreateMaster
+do
+    let queue be ThisComputerProvisioningQueue
+    let request be CreateMasterRequest
+
+    
+
+done
+
 func (s *NodeServer) CreateMaster(
     ctx context.Context,
     createMasterRequest *proto_model.CreateMasterRequest,

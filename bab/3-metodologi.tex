@@ -76,55 +76,46 @@ untuk menerima \emph{request} dari server utama. Implementasi tugas akhir ini me
 RPC dengan gRPC untuk menerima \emph{request} tersebut.
 
 \begin{lstlisting}[
-  caption={Definisi Prosedur RPC pada Komputer \emph{Worker} Bagian 1},
+  caption={\emph{Pseudocode} Definisi Prosedur RPC pada Komputer \emph{Worker} Bagian 1},
   label={lst:rpc-procedure-1}
 ]
-syntax = "proto3";
+PSEUDOCODE_definisi prosedur RPC pada komputer worker
 
-option go_package = "./services/model/proto-model";
-
-enum Status {
-  STATUS_UNSPECIFIED = 0;
-  STATUS_AVAILABLE = 1;
+procedure {
+  CreateMaster(CreateMasterRequest) returns (CreateMasterResponse) {}
+  CreateWorker(CreateWorkerRequest) returns (CreateWorkerResponse) {}
+}
 \end{lstlisting}
 
 \begin{lstlisting}[
   caption={Definisi Prosedur RPC pada Komputer \emph{Worker} Bagian 2},
   label={lst:rpc-procedure-2}
 ]
-  STATUS_UNAVAILABLE = 2;
-}
-
-message Empty {}
-
-message CreateNodeRequirements {
-  int64 cpu = 1;
-  int64 memory = 2;
-  int64 storage = 3;
-}
-
-// create master
 message CreateMasterRequest {
-  string token = 1;
-  CreateNodeRequirements requirements = 2;
+  string cluster_name
+  string cluster_token
+  number cpu, storage, memory
 }
 
 message CreateMasterResponse {
-  string ip_address = 1;
+  bool is_success
+  string message
+  string master_ip_address
+  string dashboard_token
 }
 
-// create worker
 message CreateWorkerRequest {
-  string token = 1;
-  string ip_address = 2;
-  CreateNodeRequirements requirements = 3;
+  string cluster_name
+  string cluster_token
+  string master_ip_address
+  number cpu, storage, memory
 }
 
-message CreateWorkerResponse {}
-
-service NodeService {
-  rpc CreateMaster(CreateMasterRequest) returns (CreateMasterResponse) {}
-  rpc CreateWorker(CreateWorkerRequest) returns (CreateWorkerResponse) {}
+message CreateMasterResponse {
+  bool is_success
+  string message
+  string ip_address
+  string dashboard_token
 }
 \end{lstlisting}
 
@@ -144,22 +135,63 @@ hasil konversi dari prosedur dari Protobuf dan membuat isi dari
 prosedur yang sudah ditetapkan. Server utama juga menerima hasil konversi
 dan akan menggunakannya untuk menjalankan fungsi atau prosedur tersebut di komputer
 \emph{worker}. Isi dari prosedur yang akan dijalankan di komputer \emph{worker} terdapat
-pada kode sumber \ref{lst:isi-prosedur-1} dan kode sumber \ref{lst:isi-prosedur-1}. Isi prosedur tersebut adalah \emph{logic}
-untuk membuat \emph{virtual machine} yang berjenis \emph{master node} atau \emph{worker node}.
-Perbedaan dari keduanya adalah \emph{master node} akan bertugas menjadi \emph{control plane}
-dari klaster Kubernetes yang dibuat nantinya.
+pada \emph{pseudocode} \ref{lst:isi-prosedur-1} dan \emph{pseudocode} \ref{lst:isi-prosedur-1}.
+Isi prosedur tersebut adalah \emph{logic} untuk membuat \emph{virtual machine} yang berjenis
+\emph{master node} atau \emph{worker node}. Perbedaan dari keduanya adalah \emph{master node}
+akan bertugas menjadi \emph{control plane} dari klaster Kubernetes yang dibuat nantinya.
 
-\lstinputlisting[
-  language=Go,
-  caption={Prosedur Pembuatan \emph{Control Plane} pada Komputer \emph{Worker} Bagian 1},
+\clearpage
+
+\begin{lstlisting}[
+  caption={\emph{Pseudocode} Pembuatan \emph{Control Plane} Pada Komputer \emph{Worker}},
   label={lst:isi-prosedur-1}
-]{program/rpc-procedure-logic-master.go}
+]
+PSEUDOCODE_pembuatan control plane
 
-\lstinputlisting[
-  language=Go,
-  caption={Prosedur Pembuatan \emph{Control Plane} pada Komputer \emph{Worker} Bagian 2},
+FUNC CreateMaster
+PARAMETER CreateMasterRequest
+DO
+    LET response BE CreateMasterResponse
+    LET instanceRequest BE CreateInstanceRequest
+    SET instanceRequest TO CreateMasterRequest
+
+    ADD instanceRequest TO redis.queue
+    CALL redis.subscribe WITH request
+    
+    CASE resultChannel OF
+    value:
+        SET response TO resultChannel.value
+        RETURN response
+    ELSE
+        RETURN ERROR timeoutExceeded
+DONE
+\end{lstlisting}
+
+\begin{lstlisting}[
+  caption={\emph{Pseudocode} Pembuatan \emph{Worker Node} Pada Komputer \emph{Worker}},
   label={lst:isi-prosedur-2}
-]{program/rpc-procedure-logic-worker.go}
+]
+PSEUDOCODE_pembuatan worker node
+
+FUNC CreateWorker
+PARAMETER CreateWorkerRequest
+RETURN CreateWorkerResponse 
+DO
+    LET response BE CreateWorkerResponse
+    LET instanceRequest BE CreateInstanceRequest
+    SET instanceRequest TO CreateWorkerRequest
+
+    ADD instanceRequest TO redis.queue
+    CALL redis.subscribe WITH request
+    
+    CASE resultChannel OF
+    value:
+        SET response TO resultChannel.value
+        RETURN response
+    OTHERS:
+        RETURN ERROR timeoutExceeded
+DONE
+\end{lstlisting}
 
 Komputer \emph{worker} perlu mendengarkan \emph{request} pembuatan melalui
 protokol gRPC yang sudah ditetapkan sebelumnya. \emph{Library} gRPC pada Golang
@@ -169,12 +201,24 @@ server tersebut dapat menerima \emph{request} RPC dengan prosedur atau fungsi
 yang sudah dibuat melalui \emph{stub}. Kode sumber untuk menjalankan
 gRPC server dapat dilihat pada kode sumber \ref{lst:rpc-server-start}.
 
-\lstinputlisting[
-  language=Go,
+\clearpage
+
+\begin{lstlisting}[
   caption={Memulai gRPC Server},
   label={lst:rpc-server-start},
-  style=codestyle,
-]{program/rpc-start-server.go}
+]
+PSEUDOCODE_menjalankan gRPC server
+
+FUNC StartGrpcServer
+DO
+    LET listener BE TCP_LISTENER(port)
+    LET grpcServer BE GRPC_SERVER
+
+    CALL start_worker
+    CALL connect_to_main_server
+    CALL grpcServer.serve WITH listener
+DONE
+\end{lstlisting}
 
 \subsection{Pengembangan Sistem \emph{Provisioning}}
 \label{sec:provisioning}
@@ -213,8 +257,8 @@ berukuran lebih kecil dari \emph{desktop image} dan berisi aplikasi dan \emph{to
 yang sering digunakan pada server. Namun pada Ubuntu \emph{cloud image}, tidak ada
 kata sandi untuk bisa \emph{login} ke \emph{root} pada sistem operasi. Untuk bisa \emph{login},
 dibutuhkan kata sandi untuk \emph{root} pada \emph{cloud image} tersebut. Salah satu \emph{tool} yang
-dapat digunakan untuk memodifikasi kata sandi dari \emph{user} pada file .img adalah \emph{virt-customize}.
-Untuk menambahkan kata sandi untuk \emph{root} menggunakan \emph{virt-customize} adalah
+dapat digunakan adalah \lstinline{virt-customize}.
+Untuk menambahkan kata sandi untuk \emph{root} menggunakan \lstinline{virt-customize} adalah
 sebagai berikut:
 
 \begin{lstlisting}[
@@ -310,13 +354,111 @@ pada kode sumber \ref{lst:konfigurasi-lanjutan-control-plane}.
 Untuk \emph{worker node}, konfigurasi lanjutan dari Cloud-init dapat dilihat
 pada kode sumber
 
-\lstinputlisting[
-  caption={Konfigurasi Lanjutan pada \emph{Control Plane}},
+\begin{lstlisting}[
+  caption={Konfigurasi Lanjutan pada \emph{Control Plane} Bagian 1},
   label={lst:konfigurasi-lanjutan-control-plane},
   style=codestyle,
-]{program/cloud-init-control-plane-configuration.yaml}
+]
+#cloud-config
+hostname: %s
+locale: en_US.UTF-8
+timezone: Asia/Jakarta
+users:
+- default
+- name: user
+  groups: sudo
+  sudo: ALL=(ALL:ALL) ALL
+  plain_text_passwd: user
+  lock_passwd: false
+  shell: /bin/bash
 
-Kode sumber \ref{lst:konfigurasi-lanjutan-control-plane}
+write_files:
+- path: /root/service-account.yaml
+  content: |
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: admin-user
+      namespace: kubernetes-dashboard
+\end{lstlisting}
+
+\clearpage
+
+\begin{lstlisting}[
+  caption={Konfigurasi Lanjutan pada \emph{Control Plane} Bagian 2},
+  label={lst:konfigurasi-lanjutan-control-plane-2},
+  style=codestyle,
+]
+- path: /root/role-binding.yaml
+  content: |
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: admin-user
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+    subjects:
+    - kind: ServiceAccount
+      name: admin-user
+      namespace: kubernetes-dashboard
+- path: /etc/systemd/system/kube-dashboard.service
+  content: |
+    [Unit]
+    Description=Kubernetes dashboard
+    Wants=network-online.target
+    After=k3s.service
+
+    [Install]
+    WantedBy=multi-user.target
+
+    [Service]
+    Type=simple
+    User=root
+    Restart=always
+    RestartSec=5s
+    ExecStart=/usr/local/bin/k3s \
+        kubectl -n kubernetes-dashboard \
+        port-forward svc/kubernetes-dashboard-kong-proxy \
+        8443:443 --address 0.0.0.0 \
+
+runcmd:
+- |
+  echo "running command"
+  echo "updating and upgrading packages"
+  echo "installing necessary packages"
+
+  echo "installing k3s"
+  curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_EXEC="server --token %s" sh -s -
+
+  export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+  echo "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml" >> /etc/profile
+
+  echo "creating kubernetes dashboard"
+  helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+\end{lstlisting}
+
+\clearpage
+
+\begin{lstlisting}[
+  caption={Konfigurasi Lanjutan pada \emph{Control Plane} Bagian 3},
+  label={lst:konfigurasi-lanjutan-control-plane-3},
+  style=codestyle,
+]
+  helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+  echo "setting up user for kubernetes dashboard"
+  k3s kubectl apply -f /root/service-account.yaml -f /root/role-binding.yaml
+
+  echo "writing token and starting the dashboard..."
+  echo "waiting until all pods in the kubernetes-dashboard namespaces is running"
+  k3s kubectl wait pod --all --for=condition=Ready --namespace=kubernetes-dashboard --timeout=-1s
+  systemctl start kube-dashboard.service
+
+  echo "done"
+\end{lstlisting}
+
+Kode sumber \ref{lst:konfigurasi-lanjutan-control-plane}-\ref{lst:konfigurasi-lanjutan-control-plane-3}
 mengkonfigurasi beberapa hal pada \emph{control plane} seperti berikut:
 
 \begin{enumerate}
@@ -351,13 +493,40 @@ mengkonfigurasi beberapa hal pada \emph{control plane} seperti berikut:
 
 \end{enumerate}
 
-\lstinputlisting[
-  caption={Konfigurasi Lanjutan pada \emph{Worker Node}},
-  label={lst:konfigurasi-lanjutan-worker-node},
+\begin{lstlisting}[
   style=codestyle,
-]{program/cloud-init-worker-node-configuration.yaml}
+  caption={Konfigurasi Lanjutan pada \emph{Worker Node} Bagian 1},
+  label={lst:konfigurasi-lanjutan-worker-node},
+]
+#cloud-config
+hostname: %s
+locale: en_US.UTF-8
+timezone: Asia/Jakarta
+users:
+- default
+\end{lstlisting}
 
-Kode sumber \ref{lst:konfigurasi-lanjutan-worker-node}
+\clearpage
+
+\begin{lstlisting}[
+  style=codestyle,
+  caption={Konfigurasi Lanjutan pada \emph{Worker Node} Bagian 2},
+  label={lst:konfigurasi-lanjutan-worker-node-2},
+]
+- name: user
+  groups: sudo
+  sudo: ALL=(ALL:ALL) ALL
+  plain_text_passwd: user
+  lock_passwd: false
+  shell: /bin/bash
+
+runcmd:
+- echo "installing k3s"
+- curl -sfL https://get.k3s.io | INSTALL_K3S_SKIP_DOWNLOAD=true INSTALL_K3S_EXEC="agent --server https://%s:6443 --token %s" sh -s -
+- echo "done"
+\end{lstlisting}
+
+Kode sumber \ref{lst:konfigurasi-lanjutan-worker-node}-\ref{lst:konfigurasi-lanjutan-worker-node-2}
 mengkonfigurasi beberapa hal pada \emph{worker node} seperti berikut:
 
 \begin{enumerate}
@@ -398,19 +567,40 @@ ke \emph{queue} dan pengambilan data dari \emph{queue}. Kode sumber penambahan d
 dan pengambilan data dari \emph{queue} dapat dilihat pada kode sumber
 \ref{lst:penambahan-data-ke-queue} dan \ref{lst:pengambilan-data-dari-queue}.
 
-\lstinputlisting[
-  language=go,
+\begin{lstlisting}[
+  style=codestyle,
   caption={Operasi Penambahan Data ke \emph{Queue}},
   label={lst:penambahan-data-ke-queue},
-  style=codestyle,
-]{program/redis-add-to-queue.go}
+]
+PSEUDOCODE_penambahan data ke queue
+FUNC AddToQueue
+PARAM CreateInstanceRequest
+DO
+    CALL redis.leftPush WITH CreateInstanceRequest
+DONE
+\end{lstlisting}
 
-\lstinputlisting[
-  language=go,
+\clearpage
+
+\begin{lstlisting}[
+  style=codestyle,
   caption={Operasi Pengambilan Data dari \emph{Queue}},
   label={lst:pengambilan-data-dari-queue},
-  style=codestyle,
-]{program/redis-queue-pop.go}
+]
+PSEUDOCODE_pengambilan data dari queue
+
+FUNC PopQueue
+RETURN CreateInstanceRequest
+DO
+    LET queue BE ThisComputerProvisioningQueue
+    LET result BE CreateInstanceRequest
+
+    LET data BE CALL redis.rightPop
+    SET result TO data
+
+    RETURN result
+DONE
+\end{lstlisting}
 
 Selain itu, Redis juga dapat digunakan sebagai implementasi dari paradigma \emph{message delivery}
 dalam bentuk \emph{publisher} dan \emph{subscriber}. Subjek yang menjadi
@@ -420,14 +610,35 @@ Pada implementasi tugas akhir ini, \emph{message delivery} digunakan
 sebagai bentuk komunikasi antara \emph{worker} dengan sistem \emph{provisioning}.
 Sistem komunikasi tersebut bertujuan agar \emph{worker} dapat menerima hasil
 dari \emph{provisioning}. Kode sumber fungsi \emph{publisher} dan \emph{subscriber}
-pada \emph{queue} dapat dilihat pada kode sumber \ref{lst:queue-pub-sub}.
+pada \emph{queue} dapat dilihat pada kode sumber \ref{lst:queue-pub} dan \ref{lst:queue-sub}.
 
-\lstinputlisting[
-  language=go,
-  caption={Operasi \emph{Publisher} dan \emph{Subscriber}},
-  label={lst:queue-pub-sub},
+\begin{lstlisting}[
+  caption={Operasi \emph{Publisher}},
+  label={lst:queue-pub},
   style=codestyle,
-]{program/redis-queue-pub-sub.go}
+]
+PSEUDOCODE_publisher
+
+FUNC Publish
+PARAM channel, message
+DO
+    CALL redis.publish WITH channel, message
+DONE
+\end{lstlisting}
+
+\begin{lstlisting}[
+  caption={Operasi \emph{Subscriber}},
+  label={lst:queue-sub},
+  style=codestyle,
+]
+PSEUDOCODE_subscriber
+
+FUNC Subscribe
+PARAM channel
+DO
+    CALL redis.subscribe WITH channel
+DONE
+\end{lstlisting}
 
 \emph{Worker} digunakan untuk menjalankan tugas \emph{provisioning}
 yang terdapat pada \emph{queue}. \emph{Worker} akan diimplementasikan
@@ -438,12 +649,23 @@ fungsi \emph{worker} dapat dilihat pada kode sumber \ref{lst:fungsi-worker}.
 
 \clearpage
 
-\lstinputlisting[
-  language=go,
+\begin{lstlisting}[
   caption={Fungsi pada \emph{Worker}},
   label={lst:fungsi-worker},
   style=codestyle,
-]{program/worker.go}
+]
+PSEUDOCODE_fungsi worker
+
+FUNC DoWork
+DO
+    WHILE TRUE
+    DO
+        LET instanceRequest BE CALL PopQueue
+        LET res BE CALL CreateInstance with instanceRequest
+        CALL Publish WITH instanceRequest.name, res
+    DONE
+DONE
+\end{lstlisting}
 
 Pada kode sumber \ref{lst:fungsi-worker}, \emph{worker} memanggil fungsi
 dari \emph{queue} yaitu fungsi untuk mengambil data dari \emph{queue}
@@ -469,12 +691,21 @@ Untuk menggunakan QEMU sebagai emulator dan interaksi dengan QEMU menggunakan Li
 Libvirt memerlukan konfigurasi koneksi dengan QEMU. Kode sumber untuk konfigurasi
 tersebut dapat dilihat pada kode sumber \ref{lst:konfigurasi-qemu-libvirt}.
 
-\lstinputlisting[
-  language=go,
+\begin{lstlisting}[
   caption={Konfigurasi QEMU dengan Libvirt},
   label={lst:konfigurasi-qemu-libvirt},
   style=codestyle,
-]{program/libvirt-connection.go}
+]
+PSEUDOCODE_konfigurasi koneksi dengan Libvirt
+
+FUNC InitLibvirtConnection
+RETURN LibvirtConnection
+DO
+    LET conn BE CALL libvirt.NewConnection WITH "qemu://system"
+
+    RETURN conn
+DONE
+\end{lstlisting}
 
 Pada kode sumber \ref{lst:konfigurasi-qemu-libvirt}, \lstinline{qemu:///system} akan
 digunakan sebagai koneksi ke \emph{daemon} dari Libvirt yang berjalan sebagai \emph{root}.
@@ -492,12 +723,20 @@ Proses \emph{provisioning} menggunakan Libvirt terdiri dari beberapa langkah, ya
     pada saat membuat \emph{virtual machine}. Kode sumber untuk membuat \emph{file}
     konfigurasi jaringan terdapat pada kode sumber \ref{lst:pembuatan-file-konfigurasi-jaringan}.
 
-    \lstinputlisting[
-      language=go,
+    \begin{lstlisting}[
       caption={Pembuatan \emph{File} Konfigurasi Jaringan},
       label={lst:pembuatan-file-konfigurasi-jaringan},
       style=codestyle,
-    ]{program/network-and-others-cloud-init.go}
+    ]
+PSEUDOCODE_pembuatan file Cloud-init untuk konfigurasi jaringan
+
+FUNC CreateNetwork
+DO
+    LET networkConfiguration BE CloudNetworkConfiguration
+
+    CALL WriteFile WITH networkConfiguration
+DONE
+    \end{lstlisting}
 
     Setelah \emph{file} konfigurasi jaringan telah dibuat, \emph{file}
     konfigurasi lanjutan untuk Cloud-init akan dibuat. Kode sumber untuk membuat
@@ -505,19 +744,39 @@ Proses \emph{provisioning} menggunakan Libvirt terdiri dari beberapa langkah, ya
     menjadi \emph{control plane} dan \emph{worker node} terdapat pada kode sumber
     \ref{lst:pembuatan-file-konfigurasi-control-plane} dan \ref{lst:pembuatan-file-konfigurasi-worker-node}.
 
-    \lstinputlisting[
-      language=go,
+    \begin{lstlisting}[
       caption={Pembuatan \emph{File} Konfigurasi Lanjutan \emph{Control Plane}},
       label={lst:pembuatan-file-konfigurasi-control-plane},
       style=codestyle,
-    ]{program/control-plane-cloud-init.go}
+    ]
+PSEUDOCODE_pembuatan file Cloud-init untuk Control Plane
 
-    \lstinputlisting[
-      language=go,
+FUNC CreateControlPlaneCloudInit
+DO
+    LET configuration BE ControlPlaneConfiguration
+    LET networkConfiguration BE CloudNetworkConfiguration
+    
+    CALL WriteFile WITH configuration
+    CALL cloud-localds WITH configuration, networkConfiguration
+DONE
+    \end{lstlisting}
+
+    \begin{lstlisting}[
       caption={Pembuatan \emph{File} Konfigurasi Lanjutan \emph{Worker Node}},
       label={lst:pembuatan-file-konfigurasi-worker-node},
       style=codestyle,
-    ]{program/worker-node-cloud-init.go}
+    ]
+PSEUDOCODE_pembuatan file Cloud-init untuk Worker Node
+
+FUNC CreateWorkerNodeCloudInit
+DO
+    LET configuration BE WorkerNodeConfiguration
+    LET networkConfiguration BE CloudNetworkConfiguration
+    
+    CALL WriteFile WITH configuration
+    CALL cloud-localds WITH configuration, networkConfiguration
+DONE
+    \end{lstlisting}
 
     Pada kode sumber \ref{lst:pembuatan-file-konfigurasi-control-plane}
     dan \ref{lst:pembuatan-file-konfigurasi-worker-node}, \emph{disk}
@@ -533,12 +792,25 @@ Proses \emph{provisioning} menggunakan Libvirt terdiri dari beberapa langkah, ya
     pengguna. Kode sumber untuk menyalin dan melakukan proses \emph{resize}
     terdapat pada kode sumber \ref{lst:penyalinan-cloud-image}
 
-    \lstinputlisting[
-      language=go,
+    \clearpage
+
+    \begin{lstlisting}[
       caption={Penyalinan \emph{cloud image}},
       label={lst:penyalinan-cloud-image},
       style=codestyle,
-    ]{program/image-copy-and-resize.go}
+    ]
+PSEUDOCODE_penyalinan cloud image
+
+FUNC CopyImage
+PARAM instanceName, instanceConfig
+DO
+    LET data BE CALL ReadFile WITH baseImage
+    LET destinationPath BE image_dir + "/" + instanceName
+
+    CALL WriteFile WITH destinationPath, data
+    CALL ResizeImage WITH instanceConfig.Storage
+DONE
+    \end{lstlisting}
 
   \item Membuat \emph{virtual machine}
 
@@ -548,24 +820,50 @@ Proses \emph{provisioning} menggunakan Libvirt terdiri dari beberapa langkah, ya
     Kode sumber untuk mengatur konfigurasi xml \emph{virtual machine} terdapat
     pada kode sumber \ref{lst:konfigurasi-xml-virtual-machine}
 
-    \lstinputlisting[
-      language=go,
+    \begin{lstlisting}[
       caption={Konfigurasi xml \emph{Virtual Machine}},
       label={lst:konfigurasi-xml-virtual-machine},
       style=codestyle,
-    ]{program/libvirt-xml-base.go}
+    ]
+PSEUDOCODE_pengaturan konfigurasi xml virtual machine
+
+FUNC CreateVirtualMachineXml
+PARAM instanceName, instanceConfig
+RETURN string
+DO
+    LET instanceIso BE image_dir + "/" + instanceName
+    LET cloudConfig BE cloud_config_dir + "/" + instanceName
+    LET xmlConfig BE libvirtXml WITH instanceIso, cloudConfig
+
+    RETURN xmlConfig
+DONE
+    \end{lstlisting}
 
     Setelah konfigurasi xml dari \emph{virtual machine} telah dibuat, Libvirt
     dapat menggunakan konfigurasi tersebut untuk membuat \emph{virtual machine}.
     Kode sumber untuk membuat \emph{virtual machine} menggunakan konfigurasi
-    xml dapat dilihat pada kode sumber \ref{lst:pembuatan-vm-dengan-xml}.
+    xml dapat dilihat pada kode sumber \ref{lst:pembuatan-vm}.
 
-    \lstinputlisting[
-      language=go,
-      caption={Pembuatan \emph{Virtual Machine} dengan Konfigurasi xml},
-      label={lst:pembuatan-vm-dengan-xml},
+    \begin{lstlisting}[
+      caption={Pembuatan \emph{Virtual Machine}},
+      label={lst:pembuatan-vm},
       style=codestyle,
-    ]{program/libvirt-full.go}
+    ]
+PSEUDOCODE_pembuatan virtual machine
+
+FUNC CreateVirtualMachine
+PARAM instanceRequest
+RETURN 
+DO
+    LET instanceName BE random_string
+    LET conn BE CALL InitLibvirtConnection
+
+    CALL CreateNetwork
+    LET configuration BE CALL CreateVMCloudInit
+    CALL CopyImage WITH instanceName, instanceRequest
+    CALL conn.CreateVM WITH configuration
+DONE
+    \end{lstlisting}
 
   \item Menunggu proses Cloud-init
 
@@ -574,26 +872,21 @@ Proses \emph{provisioning} menggunakan Libvirt terdiri dari beberapa langkah, ya
     untuk selesai terlebih dahulu. Untuk menunggu proses Cloud-init selesai,
     ditunjukkan pada kode sumber \ref{lst:menunggu-cloud-init}.
 
-    \lstinputlisting[
-      language=go,
+    \begin{lstlisting}[
       caption={Menunggu Proses Cloud-init Selesai},
       label={lst:menunggu-cloud-init},
       style=codestyle,
-    ]{program/wait-cloud-init.go}
+    ]
+PSEUDOCODE_menunggu proses Cloud-init selesai
 
-    Pada kode sumber \ref{lst:menunggu-cloud-init}, fungsi \lstinline{guestAgentExecStatus}
-    dipanggil. Fungsi tersebut digunakan untuk menjalankan \emph{command line interface}
-    pada \emph{virtual machine} dengan mengutilisasi qemu-guest-agent. Untuk mengetahui
-    status dari Cloud-init pada \emph{virtual machine} tersebut, Cloud-init menyiapkan
-    \emph{command line interface} yang dapat digunakan untuk mengetahui dan menunggu proses
-    dari Cloud-init. Fungsi \lstinline{guestAgentExecStatus} dapat dilihat pada \ref{lst:fungsi-untuk-menjalankan-cli}.
-
-    \lstinputlisting[
-      language=go,
-      caption={Fungsi untuk Menjalankan \emph{Command Line Interface} pada \emph{Virtual Machine}},
-      label={lst:fungsi-untuk-menjalankan-cli},
-      style=codestyle,
-    ]{program/guest-agent-exec.go}
+FUNC WaitCloudInit
+PARAM instanceRequest
+DO
+    LET dom BE VMDomain
+    LET waitCloudInit BE "cloud-init status --wait"
+    CALL dom.QemuAgentCommand WITH waitCloudInit
+DONE
+    \end{lstlisting}
 
 \end{enumerate}
 
@@ -617,7 +910,7 @@ dan \ref{fig:dashboard-with-node}.
 
 \begin{figure}[H]
   \centering
-  \fbox{\includegraphics[scale=0.35]{gambar/dashboard-with-node.png}}
+  \fbox{\includegraphics[scale=0.3]{gambar/dashboard-with-node.png}}
   \caption{Tampilan \emph{Dashboard}}
   \label{fig:dashboard-with-node}
 \end{figure}
