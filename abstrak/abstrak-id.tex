@@ -29,21 +29,24 @@
 % Ubah paragraf berikut dengan abstrak dari tugas akhir
 Sumber daya komputasi seperti komputer tidak selalu berada
 pada posisi digunakan atau berada pada posisi \emph{idle}.
+Hal tersebut dapat menjurus ke pemborosan sumber daya komputasi.
 Untuk menghindari pemborosan sumber daya komputasi tersebut,
-dibutuhkan mekanisme untuk menyewakan sumber daya yang \emph{idle}
-ke pengguna yang membutuhkan. Salah satu \emph{tool} yang
+dibutuhkan mekanisme untuk mengutilisasi sumber daya tersebut dengan cara
+menyewakan sumber daya yang \emph{idle} ke pengguna yang membutuhkan. Salah satu \emph{tool} yang
 dapat digunakan adalah Kubernetes. Namun, penggunaan Kubernetes
-pada skala besar membutuhkan sumber daya yang \emph{fix}. Pada
+biasanya membutuhkan sumber daya yang \emph{fix}. Pada
 penelitian kali ini, kami mengajukan sistem \emph{provisioning}
 klaster Kubernetes dalam bentuk \emph{virtual cluster}. \emph{Virtual cluster}
 merupakan pendekatan yang memungkinkan sumber daya komputasi disediakan secara
 \emph{on-demand}. Selain itu, \emph{multi-tenancy} juga akan diimplementasikan
-agar bisa digunakan oleh banyak pengguna. Hasil dari penelitian ini
+agar sumber daya komputasi yang disewakan sebagai tempat \emph{provisioning} dapat digunakan
+oleh lebih dari satu pengguna. Hasil dari penelitian ini
 adalah sistem \emph{provisioning virtual cluster} dapat digunakan sebagai
-sumber daya komputasi tambahan untuk penggunanya. Selain itu, komputer fisik
-untuk \emph{provisioning} dapat melayani lebih dari satu \emph{virtual cluster}
+sumber daya komputasi tambahan untuk penggunanya secara \emph{on-demand}. Selain itu,
+\emph{user} juga berbagi sumber daya komputasi yang dipinjam dengan
+\emph{user} lainnya.
 
 \vspace{2ex}
 % Ubah kata-kata berikut dengan kata kunci dari tugas akhir
 \noindent
-\textbf{Kata Kunci: \emph{Multi-Tenancy}, \emph{Virtual Machine}, Kubernetes, \emph{Virtual Cluster}.}
+\textbf{Kata Kunci: Kubernetes, \emph{Multi-Tenancy}, \emph{Virtual Cluster}, \emph{Virtual Machine}.}
