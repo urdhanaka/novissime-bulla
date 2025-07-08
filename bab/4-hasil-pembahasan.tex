@@ -6,8 +6,8 @@ dan pengujian dari sistem \emph{provisioning} yang telah
 dibuat sebelumnya pada bab 3. Pengujian yang dilakukan
 menggunakan laptop penulis dan komputer dari laboratorium Rekayasa Perangkat
 Lunak Teknik Informatika ITS. Spesifikasi dari laptop dan komputer
-yang digunakan dapat dilihat pada tabel \ref{tb:spesifikasi-laptop-pengujian} dan
-\ref{tb:spesifikasi-komputer-pengujian}
+yang digunakan dapat dilihat pada tabel \ref{tb:spesifikasi-laptop-pengujian},
+\ref{tb:spesifikasi-komputer-pengujian}, dan \ref{tb:spesifikasi-komputer-pengujian-2}.
 
 \begin{longtable}{|c|c|}
   \caption{Spesifikasi Laptop untuk Pengujian}
@@ -28,7 +28,7 @@ yang digunakan dapat dilihat pada tabel \ref{tb:spesifikasi-laptop-pengujian} da
 \end{longtable}
 
 \begin{longtable}{|c|c|}
-  \caption{Spesifikasi Komputer untuk Pengujian}
+  \caption{Spesifikasi Komputer Jenis Satu untuk Pengujian}
   \label{tb:spesifikasi-komputer-pengujian} \\
   \hline
   OS     & Ubuntu 24.04.2 LTS x86\_64 \\
@@ -43,8 +43,27 @@ yang digunakan dapat dilihat pada tabel \ref{tb:spesifikasi-laptop-pengujian} da
   \hline
 \end{longtable}
 
+\begin{longtable}{|c|c|}
+  \caption{Spesifikasi Komputer Jenis Dua untuk Pengujian}
+  \label{tb:spesifikasi-komputer-pengujian-2} \\
+  \hline
+  OS     & Ubuntu 24.04.2 LTS x86\_64 \\
+  \hline
+  Kernel & 6.11.0-24-generic          \\
+  \hline
+  CPU    & 12th Gen Intel i9-12900k (24) @ 5.100GHz       \\
+  \hline
+  GPU    & NVIDIA GeForce RTX 3080 Ti       \\
+  \hline
+  RAM    & 63998MiB       \\
+  \hline
+\end{longtable}
+
 \section{Hasil Implementasi}
 \label{sec:hasil-implementasi}
+
+Subbab ini menjelaskan hasil implementasi yang dilakukan pada
+Tugas Akhir.
 
 \subsection{Implementasi Linux Bridge}
 \label{subsec:implementasi-linux-bridge}
@@ -56,6 +75,15 @@ sama dengan komputer \emph{host} diperlukan agar \emph{virtual machine}
 yang berada di komputer A dapat berkomunikasi dengan \emph{virtual machine}
 yang berada di komputer B.
 
+Pada kode sumber \ref{cli:host-network-interface}, komputer \emph{host} memiliki
+\emph{network interface} untuk ethernet bernama enp4s0. Linux \emph{bridge} yang
+dibuat untuk implementasi tugas akhir ini adalah k3s-br0 dan enp4s0 menjadi
+\emph{slave} dari Linux \emph{bridge} k3s-br0. Alamat IP dan jangkauan IP dari
+komputer \emph{host} tersebut adalah 10.21.73.17 dengan \emph{subnet mask} /24
+yang berarti dalam \emph{local area network} tersebut terdapat 255 alamat
+IP yang dapat dibagikan oleh DHCP server.
+
+{\renewcommand{\lstlistingname}{Instruksi Terminal}
 \begin{lstlisting}[
   style=clistyle,
   caption={Informasi \emph{Network Interface} pada Komputer \emph{Host}},
@@ -72,14 +100,7 @@ yang berada di komputer B.
     inet6 fe80::1d88:4787:24c3:2a99/64 scope link noprefixroute
        valid_lft forever preferred_lft forever
 \end{lstlisting}
-
-Pada kode sumber \ref{cli:host-network-interface}, komputer \emph{host} memiliki
-\emph{network interface} untuk ethernet bernama enp4s0. Linux \emph{bridge} yang
-dibuat untuk implementasi tugas akhir ini adalah k3s-br0 dan enp4s0 menjadi
-\emph{slave} dari Linux \emph{bridge} k3s-br0. Alamat IP dan jangkauan IP dari
-komputer \emph{host} tersebut adalah 10.21.73.17 dengan \emph{subnet mask} /24
-yang berarti dalam \emph{local area network} tersebut terdapat 255 alamat
-IP yang dapat dibagikan oleh DHCP server.
+}
 
 Agar \emph{virtual machine} memiliki jangkauan alamat IP yang sama dengan 
 jangkauan alamat IP address yang didapat oleh komputer \emph{host}, \emph{virtual machine}
@@ -106,6 +127,7 @@ sumber \ref{cli:vm-network-interface}.
 ...
 \end{lstlisting}
 
+{\renewcommand{\lstlistingname}{Instruksi Terminal}
 \begin{lstlisting}[
   style=clistyle,
   caption={Informasi \emph{Network Interface} pada \emph{Virtual Machine}},
@@ -120,6 +142,7 @@ sumber \ref{cli:vm-network-interface}.
        valid_lft forever preferred_lft forever
 ...
 \end{lstlisting}
+}
 
 Pada kode sumber \ref{cli:vm-network-interface}, alamat IP yang didapat oleh
 \emph{virtual machine} adalah 10.21.73.134 dan memiliki \emph{subnet mask} /24.
@@ -128,6 +151,7 @@ dengan alamat IP dan \emph{subnet mask} yang didapat oleh komputer \emph{host}.
 Informasi lanjutan mengenai Linux \emph{bridge} dan \emph{network interfaces}
 yang tersambung dapat dilihat pada kode sumber \ref{cli:bridge-interfaces}.
 
+{\renewcommand{\lstlistingname}{Instruksi Terminal}
 \begin{lstlisting}[
   style=clistyle,
   caption={Linux \emph{Bridge} dan \emph{Network Interfaces} yang Tersambung},
@@ -137,6 +161,7 @@ bridge name     bridge id               STP enabled     interfaces
 k3s-br0         8000.92e90d634e32       yes             enp4s0
                                                         vnet7
 \end{lstlisting}
+}
 
 Pada kode sumber \ref{cli:bridge-interfaces}, \emph{network interfaces} yang
 berada di bawah Linux \emph{bridge} k3s-br0 adalah \emph{network interface}
@@ -191,8 +216,49 @@ dan gambar \ref{fig:log-output-cloud-init}.
   \caption{\emph{Log Command} yang Dijalankan Cloud-init}
   \label{fig:log-output-cloud-init}
 \end{figure}
-\subsection{Pengujian Pembuatan \emph{Virtual Cluster} Lingkungan Lokal}
 
+\subsection{\emph{Error Handling}}
+\label{subsec:error-handling}
+
+Proses \emph{provisioning virtual machine} untuk pembuatan
+klaster Kubernetes tidak selalu berjalan baik. Terdapat banyak
+faktor yang dapat membuat proses \emph{provisioning} gagal. Untuk
+mengatasi hal tersebut, proses \emph{provisioning} pada implementasi
+tugas akhir ini memiliki sifat atomik, yaitu jika terjadi \emph{error}
+saat membuat \emph{virtual machine} dan \emph{virtual machine} sudah terbuat,
+\emph{virtual machine} tersebut akan dihapus.
+
+\lstinputlisting[
+  language=go,
+  style=codestyle,
+  caption={Kode Sumber Penghapusan \emph{Virtual Machine}},
+  label={lst:vm-delete-function}
+]{program/delete-vm.go}
+
+\lstinputlisting[
+  language=go,
+  style=codestyle,
+  emphstyle=\color{black}\bfseries\underbar,
+  emph={deleteInstance},
+  caption={Contoh Penggunaan \emph{Error Handling}},
+  label={lst:error-handling-example}
+]{program/error-handling.go}
+
+Pada kode sumber \ref{lst:vm-delete-function}, fungsi \lstinline{deleteInstance}
+akan mematikan \emph{virtual machine} dan menghapus \emph{file} yang berkaitan
+dengan \emph{virtual machine} tersebut seperti \emph{cloud image} yang dipakai.
+Bentuk implementasi dari \emph{error handling} tersebut dapat dilihat pada kode
+sumber \ref{lst:error-handling-example}. Pada kode sumber tersebut, jika terjadi
+\emph{error} pada saat membuat \emph{virtual machine}, maka \emph{virtual machine}
+tersebut akan dihapus beserta semua \emph{file} yang berkaitan.
+
+\section{Hasil Pengujian}
+\label{sec:hasil-pengujian}
+
+Subbab ini menjelaskan pengujian yang dilakukan pada
+implementasi Tugas Akhir.
+
+\subsection{Pengujian Pembuatan \emph{Virtual Cluster} Lingkungan Lokal}
 \label{subsec:pengujian-pembuatan-vc}
 
 Pengujian proses \emph{provisioning} pada komputer lokal bertujuan untuk
@@ -305,42 +371,51 @@ merupakan komputer fisik dari \emph{node} eovugekt. Dari hal tersebut, dapat
 dilihat bahwa komputer fisik rpl-02 digunakan oleh dua klaster dan dua pengguna
 yang berbeda.
 
-\subsection{\emph{Error Handling}}
-\label{subsec:error-handling}
+\subsection{Pengujian \emph{Deployment} pada Klaster Kubernetes}
+\label{subsec:pengujian-deployment}
 
-Proses \emph{provisioning virtual machine} untuk pembuatan
-klaster Kubernetes tidak selalu berjalan baik. Terdapat banyak
-faktor yang dapat membuat proses \emph{provisioning} gagal. Untuk
-mengatasi hal tersebut, proses \emph{provisioning} pada implementasi
-tugas akhir ini memiliki sifat atomik, yaitu jika terjadi \emph{error}
-saat membuat \emph{virtual machine} dan \emph{virtual machine} sudah terbuat,
-\emph{virtual machine} tersebut akan dihapus.
+Pengujian berupa \emph{Deployment} pada Klaster Kubernetes dilakukan dengan
+menggunakan Nginx yang akan diekspos. Kemudian memeriksa apakah \emph{Deployment}
+tersebut dapat diakses atau tidak. \emph{Command line} yang digunakan untuk
+membuat \emph{Deployment} Nginx kemudian mengekspos agar dapat diakses
+dapat dilihat pada \ref{cli:cli-deployment-nginx}.
 
-\lstinputlisting[
-  language=go,
-  style=codestyle,
-  caption={Kode Sumber Penghapusan \emph{Virtual Machine}},
-  label={lst:vm-delete-function}
-]{program/delete-vm.go}
+{\renewcommand{\lstlistingname}{Instruksi Terminal}
+\begin{lstlisting}[
+  style=clistyle,
+  caption={\emph{Command Line} untuk Membuat \emph{Deployment} Nginx},
+  label={cli:cli-deployment-nginx},
+]
+$ kubectl create deployment nginx --image=nginx
+deployment.apps/nginx created
 
-\clearpage
+$ kubectl expose deployment nginx --type=NodePort --port=80 --target-port=80
+service/nginx exposed
 
-\lstinputlisting[
-  language=go,
-  style=codestyle,
-  emphstyle=\color{black}\bfseries\underbar,
-  emph={deleteInstance},
-  caption={Contoh Penggunaan \emph{Error Handling}},
-  label={lst:error-handling-example}
-]{program/error-handling.go}
+$ kubectl get svc nginx
+NAME    TYPE       CLUSTER-IP   EXTERNAL-IP   PORT(S)        AGE
+nginx   NodePort   10.43.5.58   <none>        80:32673/TCP   14s
+\end{lstlisting}
+}
 
-Pada kode sumber \ref{lst:vm-delete-function}, fungsi \lstinline{deleteInstance}
-akan mematikan \emph{virtual machine} dan menghapus \emph{file} yang berkaitan
-dengan \emph{virtual machine} tersebut seperti \emph{cloud image} yang dipakai.
-Bentuk implementasi dari \emph{error handling} tersebut dapat dilihat pada kode
-sumber \ref{lst:error-handling-example}. Pada kode sumber tersebut, jika terjadi
-\emph{error} pada saat membuat \emph{virtual machine}, maka \emph{virtual machine}
-tersebut akan dihapus beserta semua \emph{file} yang berkaitan.
+Berdasarkan instruksi terminal \ref{cli:cli-deployment-nginx}, \emph{Deployment}
+Nginx pada klaster tersebut diekspos ke \emph{port} 32673. Hasil pengaksesan
+\emph{Deployment} tersebut dapat dilihat pada gambar \ref{fig:nginx-deployment}.
+Dapat dilihat juga pada gambar \ref{fig:nginx-deployment} bahwa \emph{port} yang diakses adalah
+\emph{port} 32673.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.3]{gambar/nginx-deployment.png}
+  \caption{Halaman Situs Web Nginx \emph{Deployment} pada Klaster}
+  \label{fig:nginx-deployment}
+\end{figure}
+
+\subsection{Pengujian Waktu Pembuatan Klaster Kubernetes}
+\label{subsec:pengujian-deployment}
+
+Pengujian ini dilakukan untuk mengetahui waktu yang diperlukan untuk membuat
+klaster Kubernetes dengan beberapa variabel yang berbeda, yaitu 
 
 % Contoh pembuatan tabel
 % \begin{longtable}{|c|c|c|}
