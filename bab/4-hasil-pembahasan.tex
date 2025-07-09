@@ -235,6 +235,8 @@ saat membuat \emph{virtual machine} dan \emph{virtual machine} sudah terbuat,
   label={lst:vm-delete-function}
 ]{program/delete-vm.go}
 
+\clearpage
+
 \lstinputlisting[
   language=go,
   style=codestyle,
@@ -251,6 +253,18 @@ Bentuk implementasi dari \emph{error handling} tersebut dapat dilihat pada kode
 sumber \ref{lst:error-handling-example}. Pada kode sumber tersebut, jika terjadi
 \emph{error} pada saat membuat \emph{virtual machine}, maka \emph{virtual machine}
 tersebut akan dihapus beserta semua \emph{file} yang berkaitan.
+
+\subsection{Mekanisme \emph{Mutex}}
+
+Pada saat proses pembuatan VM, VM memerlukan sumber daya seperti \emph{storage}. Pada
+implementasi Tugas Akhir ini, \emph{storage} yang digunakan merupakan \emph{image} file yang
+akan diubah ukurannya menjadi lebih besar sesuai dengan jumlah \emph{storage} yang sudah
+ditetapkan untuk setiap grup. Jika terjadi proses perubahan ukuran dari banyak
+VM dalam satu waktu akan memungkinkan untuk terjadinya masalah ketika banyak VM tersebut
+mencoba untuk menambah ukuran \emph{storage} dalam satu waktu yang sama.
+
+Selain itu, VM memiliki sistem operasi tersendiri. Sumber daya yang digunakan
+untuk menjalankan sistem operasi tersebut.
 
 \section{Hasil Pengujian}
 \label{sec:hasil-pengujian}
@@ -331,6 +345,18 @@ Pada subbab pengujian ini, akan dibuat sebuah klaster yang terdiri dari dua
 bernama eovugekt dan gxlshrqm. Komputer fisik dari dua \emph{virtual machine}
 tersebut dapat dilihat pada gambar \ref{fig:vm-komputer-fisik-1}.
 
+Gambar \ref{fig:vm-komputer-fisik-1} menunjukkan bahwa \emph{nodes} gxlshrqm berada
+pada komputer fisik rpl-1 dan \emph{nodes} eovugekt berada pada
+komputer fisik rpl-02. Untuk pengujian \emph{multi-tenancy}, akan
+dibuat klaster Kubernetes lagi dari dua komputer fisik tersebut.
+
+Pada gambar \ref{fig:nodes-2-komputer-berbeda-2}, klaster yang baru
+memiliki \emph{nodes} bernama qxwuyusc dan vsbftqms. Gambar \ref{fig:vm-komputer-fisik-2}
+menunjukkan bahwa \emph{node} qxwuyusc berada pada komputer fisik rpl-02 yang juga
+merupakan komputer fisik dari \emph{node} eovugekt. Dari hal tersebut, dapat
+dilihat bahwa komputer fisik rpl-02 digunakan oleh dua klaster dan dua pengguna
+yang berbeda.
+
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.3]{gambar/two-nodes-difference-computer-dashboard.png}
@@ -345,11 +371,6 @@ tersebut dapat dilihat pada gambar \ref{fig:vm-komputer-fisik-1}.
   \label{fig:vm-komputer-fisik-1}
 \end{figure}
 
-Gambar \ref{fig:vm-komputer-fisik-1} menunjukkan bahwa \emph{nodes} gxlshrqm berada
-pada komputer fisik rpl-1 dan \emph{nodes} eovugekt berada pada
-komputer fisik rpl-02. Untuk pengujian \emph{multi-tenancy}, akan
-dibuat klaster Kubernetes lagi dari dua komputer fisik tersebut.
-
 \begin{figure}[H]
   \centering
   \includegraphics[scale=0.3]{gambar/two-nodes-difference-computer-dashboard-2.png}
@@ -363,13 +384,6 @@ dibuat klaster Kubernetes lagi dari dua komputer fisik tersebut.
   \caption{Daftar \emph{Virtual Machine} Setelah Pembuatan Klaster 2}
   \label{fig:vm-komputer-fisik-2}
 \end{figure}
-
-Pada gambar \ref{fig:nodes-2-komputer-berbeda-2}, klaster yang baru
-memiliki \emph{nodes} bernama qxwuyusc dan vsbftqms. Gambar \ref{fig:vm-komputer-fisik-2}
-menunjukkan bahwa \emph{node} qxwuyusc berada pada komputer fisik rpl-02 yang juga
-merupakan komputer fisik dari \emph{node} eovugekt. Dari hal tersebut, dapat
-dilihat bahwa komputer fisik rpl-02 digunakan oleh dua klaster dan dua pengguna
-yang berbeda.
 
 \subsection{Pengujian \emph{Deployment} pada Klaster Kubernetes}
 \label{subsec:pengujian-deployment}
@@ -415,7 +429,110 @@ Dapat dilihat juga pada gambar \ref{fig:nginx-deployment} bahwa \emph{port} yang
 \label{subsec:pengujian-deployment}
 
 Pengujian ini dilakukan untuk mengetahui waktu yang diperlukan untuk membuat
-klaster Kubernetes dengan beberapa variabel yang berbeda, yaitu 
+klaster Kubernetes dengan beberapa variabel yang berbeda seperti berikut:
+
+\begin{itemize}
+
+  \item[-] 1 \emph{worker}
+  
+  \item[-] 2 \emph{worker}
+
+  \item[-] 3 \emph{worker}
+
+\end{itemize}
+
+Untuk semua percobaan dengan variabel yang sudah disebutkan sebelumnya, jumlah \emph{virtual cluster}
+yang dibuat adalah 5 dengan masing-masing \emph{virtual cluster} terdiri dari 2 \emph{node}
+dan tiap \emph{node} memiliki 2 VCPU, 2 GB \emph{memory}, dan 4 GB \emph{storage}. Ketentuan
+sumber daya tersebut berdasarkan sumber daya minimum yang dibutuhkan oleh K3s dalam menjalankan
+klaster, yaitu \emph{control plane} dengan 2 \emph{cores} CPU dan 2GB RAM, dan \emph{node}
+dengan 1 \emph{core} CPU dan 512MB RAM. K3s tidak menyebutkan ukuran penyimpanan minimum yang dibutuhkan
+untuk menjalankan klaster, sehingga penentuan ukuran penyimpanan berdasarkan pada ukuran penyimpanan
+minimum untuk Ubuntu \emph{cloud image}, yaitu 4GB. Selain itu, ukuran penyimpanan yang besar akan
+membuat proses \emph{provisioning} VM membutuhkan waktu yang lebih lama, terlebih lagi jika perangkat
+keras untuk penyimpanan tidak menggunakan \emph{Solid State Drive} (SSD) dan masih menggunakan
+\emph{Hard Disk Drive} (HDD). Tabel waktu yang diperlukan untuk menyelesaikan \emph{job}
+pembuatan 5 \emph{virtual cluster} dapat dilihat pada tabel \ref{tb:test-1-worker}, \ref{tb:test-2-worker},
+dan \ref{tb:test-3-worker}.
+
+\begin{longtable}{|c|c|}
+  \caption{Waktu yang Dibutuhkan Menggunakan 1 \emph{Worker}}
+  \label{tb:test-1-worker}                                   \\
+  \hline
+  \rowcolor[HTML]{C0C0C0}
+  \textbf{Percobaan} & \textbf{Waktu Total yang Dibutuhkan} \\
+  \hline
+  1            & 14 menit 40 detik \\
+  2            & 11 menit  0 detik \\
+  3            & 12 menit 30 detik \\
+  4            & 15 menit  5 detik \\
+  5            & 14 menit 15 detik \\
+  \hline
+  \textbf{Rata-Rata} & \textbf{13 Menit 30 detik} \\
+  \hline
+\end{longtable}
+
+\clearpage
+
+\begin{longtable}{|c|c|}
+  \caption{Waktu yang Dibutuhkan Menggunakan 2 \emph{Worker}}
+  \label{tb:test-2-worker}                                   \\
+  \hline
+  \rowcolor[HTML]{C0C0C0}
+  \textbf{Percobaan} & \textbf{Waktu Total yang Dibutuhkan} \\
+  \hline
+  1 &  9 menit  5 detik \\
+  2 &  9 menit 50 detik \\
+  3 & 13 menit  0 detik \\
+  4 &  9 menit 35 detik \\
+  5 & 11 menit 50 detik \\
+  \hline
+  \textbf{Rata-Rata} & \textbf{10 Menit 40 detik} \\
+  \hline
+\end{longtable}
+
+\begin{longtable}{|c|c|}
+  \caption{Waktu yang Dibutuhkan Menggunakan 3 \emph{Worker}}
+  \label{tb:test-3-worker}                                   \\
+  \hline
+  \rowcolor[HTML]{C0C0C0}
+  \textbf{Percobaan} & \textbf{Waktu Total yang Dibutuhkan} \\
+  \hline
+  1 & 11 menit 50 detik \\
+  2 &  9 menit 15 detik \\
+  3 &  8 menit 45 detik \\
+  4 &  9 menit 30 detik \\
+  5 &  9 menit 45 detik \\
+  \hline
+  \textbf{Rata-Rata} & \textbf{9 Menit 49 detik} \\
+  \hline
+\end{longtable}
+
+Dalam proses pengujian, 5 permintaan pembuatan \emph{virtual cluster}
+tersebut terjadi dalam satu waktu. Semua permintaan pembuatan tersebut
+akan dimasukkan ke dalam \emph{queue} yang kemudian akan dikerjakan oleh
+\emph{worker}.
+
+Pada saat \emph{worker} mengerjakan permintaan pembuatan \emph{virtual cluster},
+\emph{worker} akan mengirim permintaan tersebut ke \emph{worker node}
+secara \emph{random}. \emph{List} dari \emph{worker node} yang digunakan
+dalam proses pengujian ini dapat dilihat pada gambar \ref{fig:testing-worker-nodes}.
+Berdasarkan tabel waktu total yang dibutuhkan untuk menyelesaikan
+semua permintaan, rata-rata waktu yang dibutuhkan untuk menyelesaikan semua permintaan
+tersebut menjadi lebih cepat ketika \emph{worker} yang digunakan meningkat.
+Namun, total waktu yang dibutuhkan untuk menyelesaikan semua permintaan
+tersebut tidak selalu lebih cepat ketika menggunakan \emph{worker} yang lebih banyak.
+Salah satu contohnya adalah percobaan 3 dengan 2 \emph{worker}. Waktu yang
+dibutuhkan adalah 13 menit 0 detik. Pada beberapa percobaan dengan menggunakan
+hanya 1 \emph{worker}, percobaan 2 menghasilkan waktu 11 menit 0 detik. Hal tersebut
+dapat terjadi jika \emph{worker node} yang sama dipilih pada saat percobaan 3 dengan 2 \emph{worker}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.365]{gambar/testing-workers.png}
+  \caption{\emph{Worker Node} yang Digunakan untuk Pengujian.}
+  \label{fig:testing-worker-nodes}
+\end{figure}
 
 % Contoh pembuatan tabel
 % \begin{longtable}{|c|c|c|}

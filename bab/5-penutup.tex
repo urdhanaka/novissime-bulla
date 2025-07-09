@@ -14,16 +14,21 @@ pada tugas akhir ini:
 
 \begin{enumerate}[nolistsep]
 
-  \item Pembuatan sistem \emph{provisioning} untuk menerapkan \emph{multi-tenancy}
-    dalam klaster Kubernetes dapat dilakukan dengan cara mengaplikasikan \emph{tools}
-    untuk membuat \emph{virtual machine} seperti Libvirt, Cloud-init, dan \emph{cloud images}.
+  \item Pembuatan \emph{virtual cluster} Kubernetes dengan melakukan \emph{resource allocations}
+    dapat dilakukan dengan cara membuat VM yang memiliki sumber daya sesuai dengan
+    sumber daya yang sudah ditentukan. Setelah semua VM tersebut terbentuk, maka \emph{virtual cluster}
+    juga akan terbentuk dengan \emph{control plane} dan \emph{node} sesuai dengan VM yang telah dibuat
+    sebelumnya.
 
-  \item Penerapan \emph{multi-tenancy} pada implementasi ini adalah
-    komputer fisik yang digunakan sebagai tempat \emph{provisioning} dapat
-    membuat lebih dari satu \emph{virtual machine} yang tergabung dalam
-    klaster yang berbeda. Implementasi tersebut menyebabkan komputer
-    fisik tersebut melayani lebih dari satu \emph{user} sehingga
-    komputer fisik tersebut memenuhi kriteria \emph{multi-tenancy}.
+  \item \emph{Multi-tenancy} dapat diimplementasikan pada \emph{virtual cluster}
+    dengan cara menggunakan Linux \emph{bridge}, sehingga setiap VM yang diciptakan
+    untuk \emph{virtual cluster} memiliki alamat IP dengan jangkauan yang sama dengan
+    \emph{host}. Hal tersebut ditujukan agar VM yang berada di komputer yang berbeda dapat
+    berkomunikasi. Setelah itu, permintaan pembuatan VM untuk \emph{virtual cluster}
+    tidak hanya diberikan ke satu \emph{worker node} saja, sehingga dalam satu \emph{virtual cluster},
+    dua VM atau lebih bisa saja berada di komputer yang berbeda. Oleh karena itu, dalam satu \emph{worker node},
+    bisa saja terdiri dari VM yang dibuat oleh \emph{user} yang berbeda yang juga tergabung
+    di \emph{virtual cluster} yang berbeda.
 
   \item Pembuatan \emph{virtual machine} yang secara otomatis tergabung
     dalam sebuah klaster Kubernetes dapat dicapai melalui beberapa \emph{tools}
